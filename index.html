@@ -1183,6 +1183,21 @@
       }
     }, 3000);
   }
+      // Otomatis mendeteksi submit form login atau klik tombol login
+document.addEventListener('DOMContentLoaded', function() {
+  const loginForm = document.querySelector('form'); // Mencari form login di halaman
+  
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      // Ambil nilai dari input pertama (biasanya username/email)
+      const inputEmail = loginForm.querySelector('input[type="text"], input[type="email"]');
+      if (inputEmail && inputEmail.value) {
+        // Panggil sistem kunci/pembayaran QRIS
+        onUserLoginSuccess(inputEmail.value);
+      }
+    });
+  }
+});  
 </script>
 </body>
 </html>
