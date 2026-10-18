@@ -156,11 +156,11 @@
                 </div>
 
                 <div class="flex items-center space-x-3">
-                    <!-- Tombol Semat Rekening BRI BRIVA -->
-<button onclick="toggleQrisModal(true)" class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors">
-  <i class="fas fa-university"></i>
-  <span class="hidden sm:inline">Semat BRI BRIVA</span>
-</button>
+                    <!-- Tombol Semat Rekening / QRIS -->
+                    <button onclick="toggleQrisModal(true)" class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-semibold rounded-xl border border-amber-200 flex items-center space-x-2 transition shadow-sm cursor-pointer">
+                        <i class="fas fa-qrcode"></i>
+                        <span class="hidden sm:inline">Semat QRIS / Rekening</span>
+                    </button>
                     <div class="h-8 w-[1px] bg-slate-200"></div>
                     <div class="text-right hidden sm:block">
                         <p id="userNameDisplay" class="text-sm font-semibold text-slate-800">Bendahara</p>
@@ -279,9 +279,6 @@
                                 <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kategori Sumber</label>
                                 <select id="inKategori" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm bg-white">
                                     <option value="Pundi-pundi">Pundi-pundi</option>
-                                    <option value="Perpuluhan">Perpuluhan (100% Sinode)</option>
-                                    <option value="Diakonia">Diakonia (100% Jemaat)</option>
-                                    <option value="Pembangunan">Pembangunan (100% Jemaat)</option>
                                     <option value="Pengucapan Syukur">Pengucapan Syukur</option>
                                     <option value="Derma PAR">Derma PAR</option>
                                     <option value="Derma Tunas">Derma Tunas</option>
@@ -294,10 +291,11 @@
                                     <option value="Derma Rayon 5">Derma Rayon 5</option>
                                     <option value="Derma Rayon 6">Derma Rayon 6</option>
                                     <option value="Derma Rayon 7">Derma Rayon 7</option>
-                                    <option value="Derma Rayon 8">Derma Rayon 8</option>
-                                    <option value="Derma Rayon 9">Derma Rayon 9</option>
                                     <option value="Derma PKB">Derma PKB</option>
                                     <option value="Derma Perjamuan Kudus">Derma Perjamuan Kudus</option>
+                                    <option value="Perpuluhan">Perpuluhan (100% Sinode)</option>
+                                    <option value="Diakonia">Diakonia (100% Jemaat)</option>
+                                    <option value="Pembangunan">Pembangunan (100% Jemaat)</option>
                                     <option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>
@@ -443,7 +441,7 @@
         </main>
     </div>
 
-    <!-- MODAL REKENING (SEMAT) -->
+    <!-- MODAL QRIS / REKENING (SEMAT) -->
     <div id="qrisModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative border border-slate-100">
             <button onclick="toggleQrisModal(false)" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition cursor-pointer">
@@ -451,26 +449,17 @@
             </button>
             <div class="text-center">
                 <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl mx-auto flex items-center justify-center text-2xl font-bold mb-3 shadow-inner">
-                    <i class="fas fa-BRI BRIVA"></i>
+                    <i class="fas fa-qrcode"></i>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900">Informasi Persembahan Digital</h3>
-                <p class="text-xs text-slate-500 mt-1">transfer melalui nomor rekening BRI BRIVA</p>
-<!-- BRIVA Payment Box -->
-<div class="my-6 p-5 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-  <div class="text-sm font-semibold text-blue-900 mb-2">BRI Virtual Account (BRIVA)</div>
-  
-  <div class="flex items-center justify-center gap-2 bg-white p-3 rounded-xl border border-slate-300 my-2">
-    <span id="brivaNumber" class="text-xl font-bold tracking-wider text-slate-800">Menyiapkan...</span>
-    <button type="button" onclick="copyBrivaNumber()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors">
-      Salin
-    </button>
-  </div>
-  
-  <p class="text-[11px] text-slate-500 mt-2">Silakan transfer sesuai nominal melalui BRImo atau ATM BRI.</p>
-</div>
+                <p class="text-xs text-slate-500 mt-1">Scan QRIS atau transfer melalui nomor rekening resmi GKI</p>
 
-<p class="text-xs font-medium text-slate-600 mt-2">Status: <span id="paymentStatus" class="text-amber-600 font-bold">Menunggu Pembayaran...</span></p>
-                
+                <!-- QRIS Box -->
+                <div class="my-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block">
+                    <img src="https://placehold.co/220x220/ffffff/15803d?text=QRIS+GKI+OFFICIAL" alt="QRIS GKI" class="mx-auto rounded-xl shadow-sm w-48 h-48 object-cover">
+                    <p class="text-[11px] text-slate-500 mt-2 font-medium">NIM / NMID: ID1029384756382</p>
+                </div>
+
                 <!-- Rekening List -->
                 <div class="space-y-3 text-left">
                     <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
@@ -479,18 +468,19 @@
                             <p class="text-sm font-mono font-semibold text-gki-700">123-456-7890</p>
                             <p class="text-[11px] text-slate-500">a.n. GKI Jemaat Kasih</p>
                         </div>
-                        <button onclick="copyToClipboard('BRI BRIVA')" class="p-2 bg-white hover:bg-gki-50 text-slate-600 hover:text-gki-700 rounded-lg border border-slate-200 transition shadow-sm cursor-pointer" title="Salin Nomor">
+                        <button onclick="copyToClipboard('1234567890', 'Nomor Rekening BCA')" class="p-2 bg-white hover:bg-gki-50 text-slate-600 hover:text-gki-700 rounded-lg border border-slate-200 transition shadow-sm cursor-pointer" title="Salin Nomor">
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
 
                     <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-bold text-slate-700">Bank BRI</p>
+                            <p class="text-xs font-bold text-slate-700">Bank Mandiri</p>
                             <p class="text-sm font-mono font-semibold text-gki-700">098-765-4321</p>
-                            <p class="text-[11px] text-slate-500">a.n. BKU Gereja </p>
+                            <p class="text-[11px] text-slate-500">a.n. GKI Jemaat Kasih</p>
                         </div>
-                        <button onclick="copyToClipboard('BRI BRIVA)
+                        <button onclick="copyToClipboard('0987654321', 'Nomor Rekening Mandiri')" class="p-2 bg-white hover:bg-gki-50 text-slate-600 hover:text-gki-700 rounded-lg border border-slate-200 transition shadow-sm cursor-pointer" title="Salin Nomor">
+                            <i class="fas fa-copy"></i>
                         </button>
                     </div>
                 </div>
@@ -1069,26 +1059,145 @@
         function executePrint() {
             window.print();
         }
-fetch("https://script.google.com/macros/s/AKfycbxqxDvWJRVixdhZtPVpeunqvh8hWjmOtKDDgbUYP85xCuJSIYeTUl44OecMQgUG6p5u/exec", {
-  method: "POST",
-  body: JSON.stringify({
-    action: "createTransaction",
-    email: "ayambori123@gmail.com",
-    customerName: "Edwin f Ramar",
-    amount: 300000,
-    productDetails: "Aktivasi BKU Gereja 1 Tahun"
-  })
-})
-.then(res => res.json())
-.then(data => {
-  if(data.status === "success") {
-    console.log("Nomor BRIVA Anda:", data.vaNumber);
-    // Tampilkan data.vaNumber ke layar HTML Anda
-    document.getElementById("brivaNumber").innerText = data.vaNumber;
-  } else {
-    alert("Gagal: " + data.message);
+    </script>
+    <!-- ======================================================= -->
+<!-- POPUP / MODAL PEMBAYARAN QRIS -->
+<!-- ======================================================= -->
+<div id="payment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 99999; justify-content: center; align-items: center;">
+  <div style="background: #ffffff; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-family: sans-serif;">
+    <h2 style="margin-top:0; color:#333;">Aktivasi BKU Gereja</h2>
+    <p style="color:#666; font-size: 14px;">Masa langganan 360 hari/ 1 Tahun akses akun Anda belum aktif. Silakan lakukan pembayaran via QRIS untuk mengaktifkan aplikasi.</p>
+    
+    <div style="margin: 20px 0;">
+      <p style="margin-bottom: 5px; font-size: 13px; color: #888;">Akun Terdeteksi:</p>
+      <strong id="modal-user-email" style="font-size: 16px; color: #007bff;">-</strong>
+    </div>
+
+    <!-- Tombol Buat QRIS -->
+    <button id="modal-pay-btn" onclick="generateQRIS()" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;">
+      Bayar via QRIS (Rp 300000)
+    </button>
+
+    <!-- Tempat Gambar QRIS -->
+    <div id="modal-qris-area" style="display: none; margin-top: 15px;">
+      <p style="font-size: 13px; font-weight: bold;">Scan QRIS di bawah ini:</p>
+      <img id="modal-qris-img" src="" alt="QRIS" style="max-width: 220px; width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 8px;">
+      <p id="modal-status-text" style="color: #d9534f; font-weight: bold; margin-top: 10px; font-size: 14px;">Menunggu Pembayaran...</p>
+    </div>
+  </div>
+</div>
+    <script>
+  // URL Backend Google Apps Script Anda
+  const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxqxDvWJRVixdhZtPVpeunqvh8hWjmOtKDDgbUYP85xCuJSIYeTUl44OecMQgUG6p5u/exec';
+
+  let activeUserId = ''; 
+  let checkStatusInterval;
+
+  // FUNGSI DIPANGGIL SAAT USER BERHASIL LOGIN
+  function onUserLoginSuccess(userEmail) {
+    activeUserId = userEmail;
+    document.getElementById('modal-user-email').innerText = activeUserId;
+
+    // Cek status langganan di Firebase via GAS
+    checkInitialSubscription(userEmail);
   }
-});
+
+  async function checkInitialSubscription(userId) {
+    try {
+      const res = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&userId=${encodeURIComponent(userId)}`);
+      const data = await res.json();
+
+      if (data.status === 'PAID' || data.paid === true) {
+        // Jika SUDAH BAYAR: Sembunyikan Modal, Izinkan Masuk
+        document.getElementById('payment-modal').style.display = 'none';
+      } else {
+        // Jika BELUM BAYAR: Tampilkan Modal Kunci Pembayaran
+        document.getElementById('payment-modal').style.display = 'flex';
+      }
+    } catch (err) {
+      console.error('Gagal mengecek status langganan:', err);
+      document.getElementById('payment-modal').style.display = 'flex';
+    }
+  }
+
+  // FUNGSI MEMBUAT QRIS DARI DALAM MODAL
+  async function generateQRIS() {
+    const payBtn = document.getElementById('modal-pay-btn');
+    payBtn.disabled = true;
+    payBtn.innerText = 'Membuat QRIS...';
+
+    try {
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'createTransaction',
+          paymentAmount: 300000, 
+          merchantOrderId: 'INV-' + Date.now(),
+          productDetails: 'Langganan BKU Gereja 360 hari/ 1 Tahun',
+          email: activeUserId
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.statusCode === "00" && data.qrString) {
+        const qrImgUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chld=M|0&chl=${encodeURIComponent(data.qrString)}`;
+        document.getElementById('modal-qris-img').src = qrImgUrl;
+        document.getElementById('modal-qris-area').style.display = 'block';
+        payBtn.style.display = 'none';
+
+        listenForPaymentSuccess(data.merchantOrderId, activeUserId);
+      } else {
+        alert('Gagal membuat QRIS: ' + (data.statusMessage || 'Terjadi kesalahan'));
+        payBtn.disabled = false;
+        payBtn.innerText = 'Bayar via QRIS';
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Terjadi kesalahan koneksi.');
+      payBtn.disabled = false;
+      payBtn.innerText = 'Bayar via QRIS';
+    }
+  }
+
+  // CEK PEMBAYARAN OTOMATIS BERKALA (EVERY 3 DETIK)
+  function listenForPaymentSuccess(orderId, userId) {
+    checkStatusInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&orderId=${orderId}&userId=${encodeURIComponent(userId)}`);
+        const result = await res.json();
+
+        if (result.status === 'PAID' || result.paid === true) {
+          clearInterval(checkStatusInterval);
+          document.getElementById('modal-status-text').innerText = ' Pembayaran Berhasil! Mengaktifkan aplikasi...';
+          document.getElementById('modal-status-text').style.color = '#28a745';
+
+          setTimeout(() => {
+            document.getElementById('payment-modal').style.display = 'none';
+            alert('Selamat! Akun Anda telah aktif, silakan gunakan aplikasi BKU Gereja.');
+          }, 1500);
+        }
+      } catch (err) {
+        console.log('Mengecek status...', err);
+      }
+    }, 3000);
+  }
+      // Otomatis mendeteksi submit form login atau klik tombol login
+document.addEventListener('DOMContentLoaded', function() {
+  const loginForm = document.querySelector('form'); // Mencari form login di halaman
+  
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      // Ambil nilai dari input pertama (biasanya username/email)
+      const inputEmail = loginForm.querySelector('input[type="text"], input[type="email"]');
+      if (inputEmail && inputEmail.value) {
+        // Panggil sistem kunci/pembayaran QRIS
+        onUserLoginSuccess(inputEmail.value);
+      }
+    });
+  }
+});  
 </script>
 </body>
 </html>
