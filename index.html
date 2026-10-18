@@ -1142,8 +1142,8 @@
       const data = await response.json();
 
       if (data.statusCode === "00" && data.qrString) {
-        const qrImgUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(data.qrString)}`;
-        document.g`etElementById('modal-qris-img').src = qrImgUrl;
+        const qrImgUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chld=M|0&chl=${encodeURIComponent(data.qrString)}`;
+        document.getElementById('modal-qris-img').src = qrImgUrl;
         document.getElementById('modal-qris-area').style.display = 'block';
         payBtn.style.display = 'none';
 
