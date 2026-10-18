@@ -1142,7 +1142,7 @@
       const data = await response.json();
 
       if (data.statusCode === "00" && data.qrString) {
-        const qrImgUrl = `https://quickchart.io/qr?text=${encodeURIComponent(data.qrString)}&size=250`;
+        const qrImgUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${encodeURIComponent(data.qrString)}`;
         document.g`etElementById('modal-qris-img').src = qrImgUrl;
         document.getElementById('modal-qris-area').style.display = 'block';
         payBtn.style.display = 'none';
