@@ -9,8 +9,9 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
+    <link href="https:/css2?https://api.qrserver.com/family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.qrString
         tailwind.config = {
             theme: {
                 extend: {
@@ -1142,7 +1143,7 @@
       const data = await response.json();
 
       if (data.statusCode === "00" && data.qrString) {
-        const qrImgUrl = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chld=M|0&chl=${encodeURIComponent(data.qrString)}`;
+      const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.qrString)}`;
         document.getElementById('modal-qris-img').src = qrImgUrl;
         document.getElementById('modal-qris-area').style.display = 'block';
         payBtn.style.display = 'none';
