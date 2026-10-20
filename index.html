@@ -54,6 +54,18 @@
                 display: none !important;
             }
         }
+        input[type="password"] {
+  background-color: #ffffff; /* Atur warna latar belakang */
+  color: #333333;            /* Atur warna teks */
+  border: 1px solid #cccccc; /* Atur garis tepi */
+}
+        input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #333333 !important; /* Warna teks yang diinginkan */
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; /* Warna background input yang diinginkan */
+  transition: background-color 5000s ease-in-out 0s;
+}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
