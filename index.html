@@ -63,6 +63,21 @@
   }
 }
 }
+        @media print {
+  /* Sembunyikan elemen latar belakang hitam, tombol pratinjau, atau modal box */
+  .modal-overlay, .modal-backdrop, .preview-container, .card-preview, .background-hitam {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    position: static !important;
+  }
+
+  /* Sembunyikan tombol-tombol navigasi/aksi saat dicetak */
+  button, .btn, .no-print {
+    display: none !important;
+  }
+}
+        
             .no-print {
                 display: none !important;
             }
