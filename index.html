@@ -80,22 +80,15 @@ input:-webkit-autofill:focus {
     }
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 0 !important; /* Menghilangkan semua margin kertas bawaan */
+    size: A4 portrait !important;
+    margin: 5mm !important; /* Atur margin kertas sekecil mungkin */
   }
 
-  /* Tarik seluruh halaman ke paling atas */
   html, body {
+    width: 210mm !important;
+    height: 297mm !important;
     margin: 0 !important;
     padding: 0 !important;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  /* Paksa semua elemen pembungkus utama tidak memiliki jarak atas */
-  div, section, main, .container, .card, .paper {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
   }
 }
  </style>
