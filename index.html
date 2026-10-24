@@ -35,6 +35,18 @@
     </script>
     <style>
         @media print {
+  @page {
+    size: A4 portrait !important;
+    margin: 5mm !important; /* Atur margin kertas sekecil mungkin */
+  }
+
+  html, body {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+        @media print {
             body * {
                 visibility: hidden;
             }
@@ -50,18 +62,7 @@
                 padding: 20px;
                 background: white;
             }
-            @media print {
-  @page {
-    size: A4 portrait !important;
-    margin: 5mm !important; /* Atur margin kertas sekecil mungkin */
-  }
-
-  html, body {
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+            
 }
             .no-print {
                 display: none !important;
