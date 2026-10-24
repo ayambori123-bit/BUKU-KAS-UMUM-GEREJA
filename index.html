@@ -34,35 +34,34 @@
         }
     </script>
     <style>
-        @media print {
+       
+       @media print {
   @page {
-    size: A4 portrait !important;
-    margin: 5mm !important; /* Atur margin kertas sekecil mungkin */
+    size: A4 portrait;
+    margin: 10mm; /* Jarak aman tepi kertas */
   }
 
-  html, body {
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
+  /* Kunci ukuran lebar elemen pembungkus utama laporan/tabel Anda */
+  .container, .paper, .sheet, body {
+    width: 190mm !important; /* Lebar efektif A4 dikurangi margin */
+    max-width: 190mm !important;
+    margin: 0 auto !important;
     padding: 0 !important;
+    float: none !important;
   }
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printArea, #printArea * {
-                visibility: visible;
-            }
-            #printArea {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 20px;
-                background: white;
-            }
-            
+
+  /* Pastikan tabel tidak terpotong dan ukurannya pas */
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    padding: 4px 6px !important; /* Sesuaikan kerapatan sel tabel */
+    font-size: 11pt !important;
+  }
+}
 }
             .no-print {
                 display: none !important;
