@@ -66,6 +66,28 @@ input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; /* Warna background input yang diinginkan */
   transition: background-color 5000s ease-in-out 0s;
 }
+        @media print {
+    /* Sembunyikan elemen modal secara keseluruhan kecuali area isi laporan */
+    #printModal div {
+        visibility: hidden;
+    }
+    
+    /* Tampilkan kembali hanya bagian teks/tabel laporan yang ingin dicetak */
+    #printModal .laporan-table, 
+    #printModal .kop-surat,
+    #printModal table {
+        visibility: visible;
+    }
+
+    /* Atur posisi agar laporan mulai dari atas kertas */
+    #printModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+    }
+}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
@@ -518,6 +540,9 @@ input:-webkit-autofill:focus {
                     </button>
                 </div>
             </div>
+            <button id="btnPdf" onclick="cetakLaporanBKU()" class="btn-cetak">
+    🖨️ Cetak / Simpan ke PDF
+</button>
 
             <!-- PRINTABLE AREA (KOP SURAT, JUDUL, TABEL, TANDA TANGAN EDITABLE) -->
             <div id="printArea" class="bg-white p-8 text-slate-800 space-y-6">
@@ -1072,6 +1097,10 @@ input:-webkit-autofill:focus {
         function executePrint() {
             window.print();
         }
+        function cetakLaporanBKU() {
+    // Anda bisa menyembunyikan tombol lain (seperti tombol edit/hapus) saat dicetak
+    window.print();
+}
     </script>
     <!-- ======================================================= -->
 <!-- POPUP / MODAL PEMBAYARAN QRIS -->
