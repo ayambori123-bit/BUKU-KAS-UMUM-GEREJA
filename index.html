@@ -66,19 +66,6 @@ input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; /* Warna background input yang diinginkan */
   transition: background-color 5000s ease-in-out 0s;
 }
-     @media print {
-  @page {
-    size: A4 portrait !important;
-    margin: 5mm !important; /* Atur margin kertas sekecil mungkin */
-  }
-
-  html, body {
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-}   
  </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
@@ -525,14 +512,15 @@ input:-webkit-autofill:focus {
                     <button onclick="executePrint()" class="px-5 py-2.5 bg-gki-700 hover:bg-gki-800 text-white font-semibold rounded-xl text-sm shadow-md transition flex items-center space-x-2 cursor-pointer">
                         <i class="fas fa-print"></i>
                         <span>Cetak Sekarang</span>
+                         <button id="btnPdf" onclick="cetakLaporanBKU()" class="btn-cetak">
+                        🖨️ Cetak / Simpan ke PDF
                     </button>
                     <button onclick="togglePrintModal(false)" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
-            <button id="btnPdf" onclick="cetakLaporanBKU()" class="btn-cetak">
-    🖨️ Cetak / Simpan ke PDF
+           
 </button>
 
             <!-- PRINTABLE AREA (KOP SURAT, JUDUL, TABEL, TANDA TANGAN EDITABLE) -->
