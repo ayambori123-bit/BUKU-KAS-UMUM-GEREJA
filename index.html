@@ -78,34 +78,26 @@ input:-webkit-autofill:focus {
     #printModal table {
         visibility: visible;
     }
-
-    /* Atur posisi agar laporan mulai dari atas kertas */
-    #printModal {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        background: white !important;
-    }
-}
-        @media print {
+@media print {
   @page {
-    size: A4 portrait; /* Sesuaikan ukuran kertas bawaan */
-    margin: 10mm 15mm; /* Atur margin atas/bawah dan kiri/kanan */
+    size: A4 portrait;
+    margin: 0 !important; /* Menghilangkan semua margin kertas bawaan */
   }
 
-  body {
+  /* Tarik seluruh halaman ke paling atas */
+  html, body {
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  /* Pastikan tidak ada elemen pembungkus utama yang memiliki margin-top besar */
-  .container-cetak {
     margin-top: 0 !important;
     padding-top: 0 !important;
   }
-}
-    </style>
+
+  /* Paksa semua elemen pembungkus utama tidak memiliki jarak atas */
+  div, section, main, .container, .card, .paper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+ </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
