@@ -88,6 +88,23 @@ input:-webkit-autofill:focus {
         background: white !important;
     }
 }
+        @media print {
+  @page {
+    size: A4 portrait; /* Sesuaikan ukuran kertas bawaan */
+    margin: 10mm 15mm; /* Atur margin atas/bawah dan kiri/kanan */
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Pastikan tidak ada elemen pembungkus utama yang memiliki margin-top besar */
+  .container-cetak {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
