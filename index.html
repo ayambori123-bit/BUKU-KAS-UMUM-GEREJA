@@ -3,1234 +3,1147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-BKU - GKI (Buku Kas Umum)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Sistem Kas Umum GKI - DIRHAM 3</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font Inter -->
-    <link href="https:/css2?https://api.qrserver.com/family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
                     colors: {
-                        gki: {
+                        brand: {
                             50: '#f0fdf4',
                             100: '#dcfce7',
-                            500: '#22c55e',
                             600: '#16a34a',
                             700: '#15803d',
                             800: '#166534',
                             900: '#14532d',
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
-       
-       @media print {
-  @page {
-    size: A4 portrait;
-    margin: 10mm; /* Jarak aman tepi kertas */
-  }
-
-  /* Kunci ukuran lebar elemen pembungkus utama laporan/tabel Anda */
-  .container, .paper, .sheet, body {
-    width: 190mm !important; /* Lebar efektif A4 dikurangi margin */
-    max-width: 190mm !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    float: none !important;
-  }
-
-  /* Pastikan tabel tidak terpotong dan ukurannya pas */
-  table {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-collapse: collapse !important;
-  }
-
-  th, td {
-    padding: 4px 6px !important; /* Sesuaikan kerapatan sel tabel */
-    font-size: 11pt !important;
-  }
-}
-.no-print {
+        /* Print Stylesheet for DIRHAM 3 Standard Sheet */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                color: black;
+                font-size: 11pt;
+            }
+            .no-print {
                 display: none !important;
             }
+            .page-break {
+                page-break-after: always;
+                break-after: page;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+            .print-table th, .print-table td {
+                border: 1px solid #000 !important;
+                padding: 4px 6px !important;
+            }
         }
-        input[type="password"] {
-  background-color: #ffffff; /* Atur warna latar belakang */
-  color: #333333;            /* Atur warna teks */
-  border: 1px solid #cccccc; /* Atur garis tepi */
-}
-        input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #333333 !important; /* Warna teks yang diinginkan */
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; /* Warna background input yang diinginkan */
-  transition: background-color 5000s ease-in-out 0s;
-}
- </style>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- GLOBAL NOTIFICATION TOAST -->
-    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
-        <i id="toastIcon" class="fas fa-info-circle text-gki-500 text-lg"></i>
-        <span id="toastMessage" class="text-sm font-medium">Notifikasi</span>
+        .dirham-stamp {
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 2px 10px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Responsive custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- LOGIN & ACTIVATION MODAL / OVERLAY -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-700 p-6 text-white text-center relative">
+                <div class="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-3 backdrop-blur-md">
+                    <i class="fa-solid font-bold text-3xl text-white">GKI</i>
+                </div>
+                <h2 class="text-2xl font-bold">E-BKU DIRHAM 3</h2>
+                <p class="text-emerald-100 text-xs mt-1">Aplikasi Buku Kas Umum Kas Jemaat GKI</p>
+            </div>
+
+            <!-- Login View -->
+            <div id="login-form-container" class="p-6">
+                <!-- Navigation Tab Switcher -->
+                <div class="flex border-b border-slate-200 mb-4 text-sm font-semibold">
+                    <button type="button" id="tab-login-btn" class="w-1/2 py-2 border-b-2 border-emerald-700 text-emerald-800 transition-all">Masuk (Login)</button>
+                    <button type="button" id="tab-register-btn" class="w-1/2 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all">Daftar (Register)</button>
+                </div>
+
+                <!-- FORM LOGIN -->
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Email / Username</label>
+                        <input type="text" id="login-username" value="bendahara@gki.or.id" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-xs text-slate-800" placeholder="Masukkan username" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Kata Sandi / License Key</label>
+                        <div class="relative">
+                            <input type="password" id="login-password" value="123456" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none pr-10 text-xs text-slate-800" placeholder="Masukkan password" required>
+                            <button type="button" id="toggle-password" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                <i class="fa-regular fa-eye" id="eye-icon"></i>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Default Password: <code class="bg-slate-100 px-1 py-0.5 rounded text-emerald-700">123456</code></p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl text-xs transition-all duration-200 shadow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
+                    </button>
+                </form>
+
+                <!-- FORM REGISTER -->
+                <form id="register-form" class="space-y-3 hidden">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="reg-fullname" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="Contoh: Sym. Edwin Ramar" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Email / Username</label>
+                        <input type="email" id="reg-email" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="email@jemaat.or.id" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Kata Sandi</label>
+                            <div class="relative">
+                                <input type="password" id="reg-password" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs pr-8" placeholder="Password" required>
+                                <button type="button" id="toggle-reg-password" class="absolute right-2.5 top-2.5 text-slate-400">
+                                    <i class="fa-regular fa-eye" id="reg-eye-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Konfirmasi Sandi</label>
+                            <input type="password" id="reg-confirm-password" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="Ulangi Sandi" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Nama Jemaat / Gereja</label>
+                        <input type="text" id="reg-jemaat" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="JEMAAT G.K.I. PERSIAPAN GEWON ISRAEL" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Klasis</label>
+                        <input type="text" id="reg-klasis" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="KLASIS MANOKWARI" required>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl text-xs transition-all duration-200 shadow flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-solid fa-user-plus"></i> Daftar & Lanjut Pembayaran
+                    </button>
+                </form>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+                    <button type="button" id="show-qris-btn" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold underline inline-flex items-center gap-1">
+                        <i class="fa-solid fa-qrcode"></i> Bayar & Aktivasi via QRIS
+                    </button>
+                </div>
+            </div>
+
+            <!-- QRIS Paywall View -->
+            <div id="qris-container" class="p-6 hidden text-center">
+                <span class="inline-block bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-medium mb-3">Aktivasi Berlangganan Web/App</span>
+                <h3 class="text-lg font-bold text-slate-800">Scan QRIS Untuk Aktivasi</h3>
+                <p class="text-xs text-slate-500 mt-1 mb-4">Pindai kode QR dibawah menggunakan aplikasi E-Wallet atau Mobile Banking Anda.</p>
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mb-4">
+                    <!-- Dynamic QRIS Mock SVG -->
+                    <svg class="w-44 h-44 mx-auto" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="200" height="200" fill="white" rx="8"/>
+                        <path d="M20 20H80V80H20V20ZM35 35V65H65V35H35Z" fill="#1e293b"/>
+                        <path d="M42 42H58V58H42V42Z" fill="#1e293b"/>
+                        <path d="M120 20H180V80H120V20ZM135 35V65H165V35H135Z" fill="#1e293b"/>
+                        <path d="M142 42H158V58H142V42Z" fill="#1e293b"/>
+                        <path d="M20 120H80V180H20V120ZM35 135V165H65V135H35Z" fill="#1e293b"/>
+                        <path d="M42 142H58V158H42V142Z" fill="#1e293b"/>
+                        <rect x="90" y="20" width="15" height="15" fill="#1e293b"/>
+                        <rect x="90" y="50" width="15" height="30" fill="#1e293b"/>
+                        <rect x="120" y="90" width="30" height="15" fill="#1e293b"/>
+                        <rect x="165" y="90" width="15" height="30" fill="#1e293b"/>
+                        <rect x="90" y="135" width="20" height="45" fill="#1e293b"/>
+                        <rect x="120" y="150" width="60" height="15" fill="#1e293b"/>
+                        <rect x="150" y="120" width="30" height="20" fill="#1e293b"/>
+                        <rect x="135" y="175" width="45" height="10" fill="#1e293b"/>
+                    </svg>
+                    <p class="text-[10px] font-mono text-slate-500 mt-2">NMID: ID1029384756102 - GKI DIRHAM</p>
+                </div>
+
+                <div class="space-y-2">
+                    <button id="confirm-payment-btn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 rounded-xl text-sm transition-all">
+                        <i class="fa-solid fa-circle-check"></i> Konfirmasi Pembayaran Selesai
+                    </button>
+                    <button id="back-to-login-btn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-xl text-sm transition-all">
+                        Kembali ke Login
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- AUTHENTICATION SECTION -->
-    <div id="authContainer" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-gki-900 via-slate-900 to-emerald-950">
-        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-8 border border-white/20">
-            <div class="text-center mb-6">
-                <div class="w-20 h-20 bg-gki-100 text-gki-700 rounded-2xl mx-auto flex items-center justify-center text-3xl font-bold shadow-inner mb-3">
-                    <i class="fas fa-church"></i>
+    <!-- MAIN APP BAR -->
+    <header class="bg-emerald-900 text-white shadow-lg sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+                    <i class="fa-solid fa-book-bible text-xl text-emerald-300"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-900">E-BKU GKI</h1>
-                <p class="text-sm text-slate-500">Buku Kas Umum Jemaat & Keuangan Gereja</p>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">E-BKU DIRHAM 3</h1>
+                    <p class="text-xs text-emerald-200 hidden sm:block">Buku Kas Umum GKI Jemaat</p>
+                </div>
             </div>
 
-            <!-- Tabs Toggle: Login / Register -->
-            <div class="flex bg-slate-100 p-1.5 rounded-xl mb-6 border border-slate-200">
-                <button type="button" id="tabLoginBtn" class="flex-1 py-2 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all duration-200 cursor-pointer">
-                    <i class="fas fa-sign-in-alt mr-1 text-gki-600"></i> Masuk
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button onclick="window.print()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 transition-all shadow">
+                    <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">Cetak / Simpan PDF</span>
                 </button>
-                <button type="button" id="tabRegisterBtn" class="flex-1 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-all duration-200 cursor-pointer">
-                    <i class="fas fa-user-plus mr-1"></i> Daftar
+                <button id="logout-btn" class="bg-red-600/80 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
                 </button>
             </div>
+        </div>
+    </header>
 
-            <!-- Login Form -->
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Email / Username</label>
-                    <input type="text" id="loginEmail" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="bendahara@gki.org">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kata Sandi</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full py-3 bg-gki-700 hover:bg-gki-800 text-white font-semibold rounded-xl shadow-lg transition duration-200 text-sm cursor-pointer flex items-center justify-center space-x-2">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Masuk ke Sistem</span>
-                </button>
-            </form>
+    <!-- APP CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-            <!-- Register Form -->
-            <form id="registerForm" class="space-y-4 hidden">
+        <!-- DASHBOARD CARDS SECTION -->
+        <section class="no-print">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nama Lengkap</label>
-                    <input type="text" id="regName" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="Budi Santoso, S.E.">
+                    <h2 class="text-xl font-bold text-slate-800">Ringkasan Kas & Pembagian Pembagian</h2>
+                    <p class="text-xs text-slate-500">Perhitungan otomatis sesuai aturan kriteria derma terbagi dan kas murni jemaat.</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Jabatan / Role</label>
-                    <select id="regJabatan" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm bg-white">
-                        <option value="Bendahara Jemaat">Bendahara Jemaat</option>
-                        <option value="Wakil Bendahara">Wakil Bendahara</option>
-                        <option value="Ketua Majelis">Ketua Majelis Jemaat</option>
-                        <option value="Anggota Tim Keuangan">Anggota Tim Keuangan</option>
+                <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                    <label for="filter-month" class="text-xs font-semibold text-slate-600 ml-1">Periode:</label>
+                    <select id="filter-month" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        <option value="0">Januari</option>
+                        <option value="1">Februari</option>
+                        <option value="2">Maret</option>
+                        <option value="3">April</option>
+                        <option value="4" selected>Mei</option>
+                        <option value="5">Juni</option>
+                        <option value="6">Juli</option>
+                        <option value="7">Agustus</option>
+                        <option value="8">September</option>
+                        <option value="9">Oktober</option>
+                        <option value="10">November</option>
+                        <option value="11">Desember</option>
+                    </select>
+                    <select id="filter-year" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Email</label>
-                    <input type="email" id="regEmail" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="bendahara@gki.org">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                <!-- Total Pemasukan -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="text-xs font-medium text-slate-500">Total Pemasukan Bulan Ini</div>
+                    <div id="card-total-pemasukan" class="text-xl font-bold text-emerald-600 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Semua jenis derma & penerimaan</div>
+                    <div class="absolute -right-2 -bottom-2 text-emerald-100 text-5xl font-black pointer-events-none">+</div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kata Sandi</label>
-                    <input type="password" id="regPassword" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="••••••••">
+
+                <!-- 40% Milik Sinode -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500">40% Milik Sinode</div>
+                    <div id="card-sinode" class="text-xl font-bold text-indigo-600 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Pundi, Derma Kategori & Syukur</div>
                 </div>
-                <button type="submit" class="w-full py-3 bg-gki-700 hover:bg-gki-800 text-white font-semibold rounded-xl shadow-lg transition duration-200 text-sm cursor-pointer flex items-center justify-center space-x-2">
-                    <i class="fas fa-user-check"></i>
-                    <span>Daftar Akun Baru</span>
-                </button>
+
+                <!-- 100% Perpuluhan (Sinode) -->
+                <div class="bg-white p-4 rounded-xl border border-purple-200 shadow-sm bg-purple-50/30">
+                    <div class="text-xs font-medium text-purple-900">Perpuluhan 100% Sinode</div>
+                    <div id="card-perpuluhan" class="text-xl font-bold text-purple-700 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-purple-500 mt-1">Utuh 100% Setor ke Sinode</div>
+                </div>
+
+                <!-- 20% Milik Klasis -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500">20% Milik Klasis</div>
+                    <div id="card-klasis" class="text-xl font-bold text-blue-600 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Pundi, Derma Kategori & Syukur</div>
+                </div>
+
+                <!-- Kas Jemaat Total -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm bg-gradient-to-br from-emerald-50 to-white">
+                    <div class="text-xs font-medium text-emerald-800">Kas Jemaat Total</div>
+                    <div id="card-kas-jemaat" class="text-xl font-bold text-emerald-800 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-emerald-600 mt-1">40% Derma + Diakonia/Pembangunan</div>
+                </div>
+
+                <!-- Total Pengeluaran -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500">Total Pengeluaran Bulan Ini</div>
+                    <div id="card-total-pengeluaran" class="text-xl font-bold text-rose-600 mt-1">Rp 0</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Operasional, Insentif, Pelayanan</div>
+                </div>
+
+                <!-- Sisa Saldo Kas -->
+                <div class="bg-emerald-800 text-white p-4 rounded-xl shadow-md flex flex-col justify-between sm:col-span-2 lg:col-span-3 xl:col-span-6">
+                    <div>
+                        <div class="text-xs text-emerald-200 font-medium">Sisa / Saldo Kas Akhir</div>
+                        <div id="card-sisa-saldo" class="text-xl font-extrabold mt-1">Rp 0</div>
+                    </div>
+                    <div class="text-[10px] text-emerald-200 mt-2 border-t border-emerald-700/60 pt-1 flex justify-between">
+                        <span>Kumulatif Otomatis</span>
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INPUT FORM TRANSACTION & CONFIGURATION SECTION -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 no-print space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-emerald-700"></i> Penginputan Transaksi
+                </h3>
+                <span id="form-mode-badge" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Mode: Tambah Baru</span>
+            </div>
+
+            <form id="transaction-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
+                <input type="hidden" id="tx-id">
+
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Tanggal</label>
+                    <input type="date" id="tx-date" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none" required>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Jenis Transaksi</label>
+                    <select id="tx-type" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        <option value="penerimaan">Penerimaan (Masuk)</option>
+                        <option value="pengeluaran">Pengeluaran (Keluar)</option>
+                    </select>
+                </div>
+
+                <div class="lg:col-span-3">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Kategori / Preset Uraian</label>
+                    <select id="tx-category-preset" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+
+                <div class="lg:col-span-3">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Uraian Transaksi</label>
+                    <input type="text" id="tx-description" placeholder="Contoh: Pundi-Pundi / Transpor Pelayan Firman" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none" required>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Kode M.A</label>
+                    <input type="text" id="tx-kode-ma" placeholder="1 / - " class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="lg:col-span-3">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Jumlah Nilai (Rp)</label>
+                    <input type="number" id="tx-amount" min="0" placeholder="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none" required>
+                </div>
+
+                <div class="lg:col-span-9 flex items-end gap-2">
+                    <button type="submit" id="btn-save-tx" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Simpan Transaksi
+                    </button>
+                    <button type="button" id="btn-cancel-edit" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium text-xs px-4 py-2.5 rounded-xl transition-all hidden">
+                        Batal
+                    </button>
+                    <button type="button" id="btn-reset-data" class="ml-auto bg-red-50 hover:bg-red-100 text-red-600 font-medium text-xs px-3 py-2.5 rounded-xl transition-all border border-red-200">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Contoh Data
+                    </button>
+                </div>
             </form>
+        </section>
 
-            <!-- Quick Demo Bypass Option -->
-            <div class="mt-6 pt-5 border-t border-slate-200 text-center">
-                <p class="text-xs text-slate-500 mb-2">Ingin mencoba tanpa mendaftar?</p>
-                <button type="button" id="demoModeBtn" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-semibold rounded-xl text-xs transition duration-200 flex items-center justify-center space-x-2 cursor-pointer">
-                    <i class="fas fa-bolt text-amber-600"></i>
-                    <span>Masuk Langsung (Mode Demo Bendahara)</span>
-                </button>
+        <!-- PRINT CONTROL & EDITABLE KOP SURAT PANEL -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 no-print space-y-4">
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b border-slate-100 pb-2">
+                <i class="fa-solid fa-sliders text-emerald-700"></i> Pengaturan Kop Surat, Logo & Tanda Tangan Cetak
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Klasis</label>
+                    <input type="text" id="config-klasis" value="KLASIS MANOKWARI" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Nama Jemaat</label>
+                    <input type="text" id="config-jemaat" value="JEMAAT G.K.I. PERSIAPAN GEWON ISRAEL" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Tahun Anggaran</label>
+                    <input type="text" id="config-tahun" value="2026" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Bulan Laporan</label>
+                    <input type="text" id="config-bulan" value="MEI" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- MAIN DASHBOARD CONTAINER -->
-    <div id="dashboardContainer" class="hidden flex-1 flex flex-col">
-        <!-- HEADER -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gki-600 text-white rounded-xl flex items-center justify-center text-xl font-bold shadow-md">
-                        <i class="fas fa-church"></i>
+            <!-- Logo upload/download/remove control -->
+            <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 overflow-hidden" id="logo-preview-box">
+                        <!-- SVG Default Logo -->
+                        <svg id="app-logo-svg" class="w-10 h-10 text-emerald-800" viewBox="0 0 100 100" fill="currentColor">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="6"/>
+                            <path d="M50 15 V85 M25 35 H75" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 leading-tight">E-BKU GKI</h2>
-                        <p class="text-xs text-slate-500">Buku Kas Umum Jemaat & Keuangan Gereja</p>
+                        <span class="block text-xs font-semibold text-slate-700">Logo Laporan (Kop Cetak)</span>
+                        <p class="text-[10px] text-slate-400">Logo GKI standar / dapat diunggah sesuai kebutuhan.</p>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-3">
-                    <!-- Tombol Semat Rekening / QRIS -->
-                    <button onclick="toggleQrisModal(true)" class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-semibold rounded-xl border border-amber-200 flex items-center space-x-2 transition shadow-sm cursor-pointer">
-                        <i class="fas fa-qrcode"></i>
-                        <span class="hidden sm:inline">Semat QRIS / Rekening</span>
+                <div class="flex items-center gap-2 text-xs">
+                    <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium cursor-pointer transition-all border border-slate-300">
+                        <i class="fa-solid fa-upload"></i> Unggah Logo
+                        <input type="file" id="logo-upload-input" accept="image/*" class="hidden">
+                    </label>
+                    <button id="btn-download-logo" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition-all border border-slate-300">
+                        <i class="fa-solid fa-download"></i> Unduh
                     </button>
-                    <div class="h-8 w-[1px] bg-slate-200"></div>
-                    <div class="text-right hidden sm:block">
-                        <p id="userNameDisplay" class="text-sm font-semibold text-slate-800">Bendahara</p>
-                        <p id="userRoleDisplay" class="text-xs text-slate-500">Majelis Jemaat GKI</p>
-                    </div>
-                    <button onclick="handleLogout()" class="p-2.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 rounded-xl transition cursor-pointer" title="Keluar">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button id="btn-delete-logo" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg font-medium transition-all border border-red-200">
+                        <i class="fa-solid fa-trash"></i> Hapus Logo
                     </button>
                 </div>
             </div>
-        </header>
 
-        <!-- DASHBOARD CONTENT -->
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            <!-- Signatures Configuration -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-2 border-t border-slate-100">
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Nama Ketua / Wakil Ketua</label>
+                    <input type="text" id="config-ketua" value="Pnt. HERI REBA" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-600 mb-1">Nama Bendahara</label>
+                    <input type="text" id="config-bendahara" value="Sym. EDWIN F. RAMAR" class="w-full px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+            </div>
+        </section>
+
+        <!-- LIVE INTERACTIVE TABLE (SCREEN VIEW) -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden no-print">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emerald-700"></i> Daftar Transaksi Inputan
+                </h3>
+                <span class="text-xs text-slate-400">Total: <span id="tx-count" class="font-bold text-slate-700">0</span> Item</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                            <th class="p-3 w-12 text-center">NO</th>
+                            <th class="p-3 w-24">TANGGAL</th>
+                            <th class="p-3">URAIAN</th>
+                            <th class="p-3 w-20 text-center">KODE M.A</th>
+                            <th class="p-3 w-32 text-right">PENERIMAAN</th>
+                            <th class="p-3 w-32 text-right">PENGELUARAN</th>
+                            <th class="p-3 w-24 text-center">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="screen-tx-tbody" class="divide-y divide-slate-100">
+                        <!-- Transactions inserted dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- DIRHAM 3 PRINTABLE SHEET (EXACT MATCH TO HANDWRITTEN PHOTO FORMAT) -->
+        <section id="print-area" class="bg-white p-6 rounded-2xl border border-slate-300 shadow-xl my-6">
             
-            <!-- SUMMARY CARDS GRID (ROW 1: TOTALS & KAS) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Card 1: Total Pemasukan -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
-                    <div class="absolute -right-4 -bottom-4 text-gki-50 opacity-50 text-7xl"><i class="fas fa-wallet"></i></div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-600">Total Pemasukan</p>
-                        <h3 id="cardTotalPemasukan" class="text-2xl font-bold text-slate-900 mt-2">Rp 0</h3>
-                    </div>
-                    <p class="text-xs text-gki-600 font-medium mt-4 flex items-center"><i class="fas fa-arrow-up mr-1"></i> Akumulasi seluruh penerimaan</p>
+            <!-- HEADER / KOP SURAT (DIRHAM 3 FORMAT) -->
+            <div class="relative text-center font-bold tracking-wide uppercase text-slate-900 border-b-2 border-slate-800 pb-4 mb-4">
+                <!-- PATENT DIRHAM 3 STAMP ON TOP RIGHT -->
+                <div class="absolute right-0 top-0">
+                    <div class="dirham-stamp text-xs text-slate-900 border-black">DIRHAM 3</div>
                 </div>
 
-                <!-- Card 2: Kas Jemaat -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
-                    <div class="absolute -right-4 -bottom-4 text-emerald-50 opacity-50 text-7xl"><i class="fas fa-piggy-bank"></i></div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-600">Kas Jemaat Aktif</p>
-                        <h3 id="cardKasJemaat" class="text-2xl font-bold text-gki-700 mt-2">Rp 0</h3>
+                <!-- LOGO & TEXT KOP -->
+                <div class="flex flex-col items-center justify-center">
+                    <div id="print-logo-container" class="mb-2">
+                        <!-- Dynamic Logo Image or SVG -->
+                        <svg id="print-logo-svg" class="w-12 h-12 text-slate-900 mx-auto" viewBox="0 0 100 100" fill="currentColor">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="black" stroke-width="6"/>
+                            <path d="M50 15 V85 M25 35 H75" stroke="black" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                        <img id="print-logo-img" class="w-14 h-14 object-contain mx-auto hidden" alt="Logo">
                     </div>
-                    <p class="text-xs text-gki-600 font-medium mt-4"><i class="fas fa-check-circle mr-1"></i> (Alokasi Jemaat) - (Total Pengeluaran)</p>
-                </div>
-
-                <!-- Card 3: Total Pengeluaran -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col justify-between">
-                    <div class="absolute -right-4 -bottom-4 text-rose-50 opacity-50 text-7xl"><i class="fas fa-receipt"></i></div>
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-600">Total Pengeluaran</p>
-                        <h3 id="cardTotalPengeluaran" class="text-2xl font-bold text-rose-600 mt-2">Rp 0</h3>
-                    </div>
-                    <p class="text-xs text-rose-600 font-medium mt-4 flex items-center"><i class="fas fa-arrow-down mr-1"></i> Biaya operasional & kegiatan</p>
+                    
+                    <h2 class="text-sm font-black">GEREJA KRISTEN INJILI DI TANAH PAPUA</h2>
+                    <p class="text-xs font-bold">(Persekutuan Gereja - Gereja di Indonesia)</p>
+                    <p id="print-klasis" class="text-xs font-bold mt-0.5">KLASIS MANOKWARI</p>
+                    <p id="print-jemaat" class="text-xs font-bold mt-0.5">JEMAAT G.K.I. PERSIAPAN GEWON ISRAEL</p>
+                    <h1 class="text-base font-black mt-2 underline">BUKU KAS UMUM GEREJA</h1>
+                    <p class="text-xs font-bold">TAHUN ANGGARAN <span id="print-tahun">2026</span></p>
+                    <p class="text-xs font-bold">BULAN <span id="print-bulan">FEBRUARI</span></p>
                 </div>
             </div>
 
-            <!-- DEDICATED PERPULUHAN CARD (STAND-ALONE HIGHLIGHTED) -->
-            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden border border-blue-700/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="absolute -right-6 -bottom-6 text-white/5 text-9xl pointer-events-none"><i class="fas fa-hand-holding-heart"></i></div>
-                <div class="space-y-1 relative z-10">
-                    <div class="flex items-center space-x-2">
-                        <span class="px-2.5 py-0.5 bg-blue-500/30 text-blue-200 text-[10px] font-bold uppercase tracking-wider rounded-full border border-blue-400/30">Terpisah dari Kas Jemaat</span>
-                        <span class="px-2.5 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider rounded-full">100% Hak Sinode</span>
+            <!-- SINGLE UNIFIED MAIN LEDGER TABLE -->
+            <table class="w-full text-xs print-table border-collapse border border-black mb-6">
+                <thead>
+                    <tr class="bg-slate-100 text-black font-bold uppercase text-center border-b border-black">
+                        <th class="w-8 border border-black py-2">NO</th>
+                        <th class="w-20 border border-black py-2">TANGGAL</th>
+                        <th class="border border-black py-2">URAIAN</th>
+                        <th class="w-16 border border-black py-2">KODE M.A</th>
+                        <th class="w-32 border border-black py-2">PENERIMAAN</th>
+                        <th class="w-32 border border-black py-2">PENGELUARAN</th>
+                    </tr>
+                </thead>
+                <tbody id="print-ledger-tbody">
+                    <!-- Dynamic Transaction Rows -->
+                </tbody>
+
+                <!-- FOOTER CALCULATION SUMMARY (EXACT FORMAT FROM PHOTO 2) -->
+                <tfoot class="font-bold border-t-2 border-black">
+                    <tr class="border-b border-black">
+                        <td colspan="4" class="text-left px-3 py-1.5 border border-black">Jumlah Bulan ini</td>
+                        <td id="sum-penerimaan-bln-ini" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                        <td id="sum-pengeluaran-bln-ini" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                    </tr>
+                    <tr class="border-b border-black">
+                        <td colspan="4" class="text-left px-3 py-1.5 border border-black">Jumlah s/d Bulan Lalu</td>
+                        <td id="sum-penerimaan-bln-lalu" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                        <td id="sum-pengeluaran-bln-lalu" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                    </tr>
+                    <tr class="border-b border-black">
+                        <td colspan="4" class="text-left px-3 py-1.5 border border-black">Jumlah Semua</td>
+                        <td id="sum-penerimaan-semua" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                        <td id="sum-pengeluaran-semua" class="text-right px-2 py-1.5 border border-black">Rp 0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-left px-3 py-1.5 border border-black">Sisa / Saldo</td>
+                        <td colspan="2" id="sum-sisa-saldo-final" class="text-right px-3 py-1.5 border border-black text-sm">Rp 0</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- FOOTER STATEMENT & CASH COUNT DETAILS (MATCHED TO PHOTO 2) -->
+            <div class="text-xs space-y-2 mt-4 text-black">
+                <p>Pada hari ini .................. tanggal ............................ kami dapati dalam kas sisa/saldo</p>
+                <p>Rp. <span id="print-statement-saldo" class="font-bold">..............................</span> ( <span id="print-terbilang" class="italic">....................................................................................</span> ) yang terdiri dari :</p>
+                
+                <div class="ml-12 space-y-1">
+                    <div class="flex items-center gap-4">
+                        <span class="w-32">- Uang Tunai</span>
+                        <span>: Rp. ........................................</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <span>Penerimaan Perpuluhan</span>
-                    </h3>
-                    <p class="text-xs text-blue-200/80 max-w-xl">Penerimaan perpuluhan dihitung secara khusus dan disetorkan 100% ke Sinode. Nominal ini tidak dicampur dengan alokasi persentase 40% milik Jemaat maupun 20% Klasis.</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl border border-white/15 text-right flex-shrink-0 relative z-10">
-                    <p class="text-[11px] font-semibold text-blue-200 uppercase tracking-wider">Total Perpuluhan Terkumpul</p>
-                    <h2 id="cardPerpuluhan" class="text-3xl font-extrabold text-amber-300 mt-1">Rp 0</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="w-32">- Sisa/Saldo Bank</span>
+                        <span>: Rp. ........................................</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="w-32">- Surat Berharga</span>
+                        <span>: Rp. ........................................</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- ALLOCATION CARDS (20% Klasis, 40% Sinode Umum, 40% Jemaat) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <!-- 20% Klasis -->
-                <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
-                    <div class="absolute right-3 top-3 text-white/10 text-6xl"><i class="fas fa-network-wired"></i></div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-indigo-100">Pembagian Klasis (20%)</p>
-                    <h3 id="cardKlasis" class="text-2xl font-bold mt-2">Rp 0</h3>
-                    <p class="text-xs text-indigo-200 mt-3">20% dari Pundi & Derma umum</p>
-                </div>
-
-                <!-- 40% Sinode (Umum) -->
-                <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
-                    <div class="absolute right-3 top-3 text-white/10 text-6xl"><i class="fas fa-globe"></i></div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Pembagian Sinode (40% + Perpuluhan)</p>
-                    <h3 id="cardSinode" class="text-2xl font-bold mt-2">Rp 0</h3>
-                    <p class="text-xs text-blue-200 mt-3">Rincian: <span id="sinodeBreakdown" class="font-semibold text-white">40% Umum + 100% Perpuluhan</span></p>
-                </div>
-
-                <!-- 40% Jemaat -->
-                <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
-                    <div class="absolute right-3 top-3 text-white/10 text-6xl"><i class="fas fa-users"></i></div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-emerald-100">Pembagian Jemaat (40% + Diakonia/Pembangunan)</p>
-                    <h3 id="cardJemaatAlokasi" class="text-2xl font-bold mt-2">Rp 0</h3>
-                    <p class="text-xs text-emerald-200 mt-3">Hak Jemaat sebelum dikurangi pengeluaran</p>
-                </div>
-            </div>
-
-            <!-- INPUT SECTION & FORMS -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- FORM PEMASUKAN -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gki-100 text-gki-700 rounded-xl flex items-center justify-center font-bold">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900">Input Pemasukan</h3>
-                        </div>
-                        <span class="text-xs bg-gki-50 text-gki-700 px-3 py-1 rounded-full font-medium">Otomatis Terhitung</span>
-                    </div>
-
-                    <form id="pemasukanForm" onsubmit="handleTambahPemasukan(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Tanggal</label>
-                                <input type="date" id="inDate" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kategori Sumber</label>
-                                <select id="inKategori" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm bg-white">
-                                    <option value="Pundi-pundi">Pundi-pundi</option>
-                                    <option value="Pengucapan Syukur">Pengucapan Syukur</option>
-                                    <option value="Derma PAR">Derma PAR</option>
-                                    <option value="Derma Tunas">Derma Tunas</option>
-                                    <option value="Derma PAM">Derma PAM</option>
-                                    <option value="Derma PW">Derma PW</option>
-                                    <option value="Derma Rayon 1">Derma Rayon 1</option>
-                                    <option value="Derma Rayon 2">Derma Rayon 2</option>
-                                    <option value="Derma Rayon 3">Derma Rayon 3</option>
-                                    <option value="Derma Rayon 4">Derma Rayon 4</option>
-                                    <option value="Derma Rayon 5">Derma Rayon 5</option>
-                                    <option value="Derma Rayon 6">Derma Rayon 6</option>
-                                    <option value="Derma Rayon 7">Derma Rayon 7</option>
-                                    <option value="Derma PKB">Derma PKB</option>
-                                    <option value="Derma Perjamuan Kudus">Derma Perjamuan Kudus</option>
-                                    <option value="Perpuluhan">Perpuluhan (100% Sinode)</option>
-                                    <option value="Diakonia">Diakonia (100% Jemaat)</option>
-                                    <option value="Pembangunan">Pembangunan (100% Jemaat)</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Uraian / Keterangan</label>
-                            <input type="text" id="inUraian" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="Contoh: Kolekte Ibadah Minggu Raya 1">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nominal (Rp)</label>
-                            <input type="number" id="inNominal" min="0" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-gki-500 text-sm" placeholder="1000000">
-                        </div>
-
-                        <button type="submit" class="w-full py-3 bg-gki-600 hover:bg-gki-700 text-white font-semibold rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center space-x-2 cursor-pointer">
-                            <i class="fas fa-save"></i>
-                            <span>Simpan Pemasukan</span>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- FORM PENGELUARAN -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-rose-100 text-rose-700 rounded-xl flex items-center justify-center font-bold">
-                                <i class="fas fa-minus-circle"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900">Input Pengeluaran & Bukti</h3>
-                        </div>
-                        <span class="text-xs bg-rose-50 text-rose-700 px-3 py-1 rounded-full font-medium">Dilengkapi Bukti PDF/Foto</span>
-                    </div>
-
-                    <form id="pengeluaranForm" onsubmit="handleTambahPengeluaran(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Tanggal</label>
-                                <input type="date" id="outDate" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Kategori Pengeluaran</label>
-                                <select id="outKategori" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm bg-white">
-                                    <option value="Operasional Kantor">Operasional Kantor & Sekretariat</option>
-                                    <option value="Pemeliharaan Gedung">Pemeliharaan Gedung & Inventaris</option>
-                                    <option value="Honor Pelayan / Pendeta">Honor Pendeta / Majelis / Koster</option>
-                                    <option value="Kegiatan Komisi / BIPRA">Kegiatan Komisi / BIPRA (PAR, Tunas, PAM, PW, PKB)</option>
-                                    <option value="Diakonia Sosial">Diakonia Sosial & Bantuan Kasih</option>
-                                    <option value="Setoran Klasis / Sinode">Setoran Kewajiban Klasis / Sinode</option>
-                                    <option value="Lain-lain">Lain-lain</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Uraian / Keterangan Keperluan</label>
-                            <input type="text" id="outUraian" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm" placeholder="Contoh: Pembelian alat tulis kantor & tinta printer">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nominal (Rp)</label>
-                                <input type="number" id="outNominal" min="0" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm" placeholder="500000">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Upload Bukti (Foto/PDF)</label>
-                                <input type="file" id="outBukti" accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center space-x-2 cursor-pointer">
-                            <i class="fas fa-save"></i>
-                            <span>Simpan Pengeluaran</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- TABEL DATA & AKSI LAPORAN -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Rincian Buku Kas Umum (BKU)</h3>
-                        <p class="text-xs text-slate-500">Daftar transaksi pemasukan dan pengeluaran gereja</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <button onclick="bukaModalCetak()" class="px-5 py-2.5 bg-gki-700 hover:bg-gki-800 text-white font-semibold rounded-xl shadow-sm transition flex items-center space-x-2 text-sm cursor-pointer">
-                            <i class="fas fa-print"></i>
-                            <span>Cetak Laporan BKU Resmi</span>
-                        </button>
-                        <button onclick="resetDataTransaksi()" class="px-3 py-2.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-semibold rounded-xl transition text-sm cursor-pointer" title="Reset Semua Data">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TABS TABEL -->
-                <div class="flex border-b border-slate-200 bg-slate-50 px-6">
-                    <button onclick="switchTableTab('pemasukan')" id="tableTabIn" class="py-3 px-6 text-sm font-bold text-gki-700 border-b-2 border-gki-600 transition cursor-pointer">Pemasukan (<span id="countIn">0</span>)</button>
-                    <button onclick="switchTableTab('pengeluaran')" id="tableTabOut" class="py-3 px-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition cursor-pointer">Pengeluaran (<span id="countOut">0</span>)</button>
-                </div>
-
-                <!-- TABEL PEMASUKAN -->
-                <div id="tableContainerIn" class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-200">
-                                <th class="p-4">Tanggal</th>
-                                <th class="p-4">Kategori</th>
-                                <th class="p-4">Uraian</th>
-                                <th class="p-4 text-right">Nominal</th>
-                                <th class="p-4 text-center">Klasis (20%)</th>
-                                <th class="p-4 text-center">Sinode (40%)</th>
-                                <th class="p-4 text-center">Jemaat (40%)</th>
-                                <th class="p-4 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listPemasukanBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Data injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- TABEL PENGELUARAN -->
-                <div id="tableContainerOut" class="overflow-x-auto hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-200">
-                                <th class="p-4">Tanggal</th>
-                                <th class="p-4">Kategori</th>
-                                <th class="p-4">Uraian</th>
-                                <th class="p-4 text-right">Nominal</th>
-                                <th class="p-4 text-center">Bukti Nota</th>
-                                <th class="p-4 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listPengeluaranBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Data injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL QRIS / REKENING (SEMAT) -->
-    <div id="qrisModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative border border-slate-100">
-            <button onclick="toggleQrisModal(false)" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition cursor-pointer">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="text-center">
-                <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl mx-auto flex items-center justify-center text-2xl font-bold mb-3 shadow-inner">
-                    <i class="fas fa-qrcode"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-900">Informasi Persembahan Digital</h3>
-                <p class="text-xs text-slate-500 mt-1">Scan QRIS atau transfer melalui nomor rekening resmi GKI</p>
-
-                <!-- QRIS Box -->
-                <div class="my-6 p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block">
-                    <img src="https://placehold.co/220x220/ffffff/15803d?text=QRIS+GKI+OFFICIAL" alt="QRIS GKI" class="mx-auto rounded-xl shadow-sm w-48 h-48 object-cover">
-                    <p class="text-[11px] text-slate-500 mt-2 font-medium">NIM / NMID: ID1029384756382</p>
-                </div>
-
-                <!-- Rekening List -->
-                <div class="space-y-3 text-left">
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-slate-700">Bank Central Asia (BCA)</p>
-                            <p class="text-sm font-mono font-semibold text-gki-700">123-456-7890</p>
-                            <p class="text-[11px] text-slate-500">a.n. GKI Jemaat Kasih</p>
-                        </div>
-                        <button onclick="copyToClipboard('1234567890', 'Nomor Rekening BCA')" class="p-2 bg-white hover:bg-gki-50 text-slate-600 hover:text-gki-700 rounded-lg border border-slate-200 transition shadow-sm cursor-pointer" title="Salin Nomor">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-slate-700">Bank Mandiri</p>
-                            <p class="text-sm font-mono font-semibold text-gki-700">098-765-4321</p>
-                            <p class="text-[11px] text-slate-500">a.n. GKI Jemaat Kasih</p>
-                        </div>
-                        <button onclick="copyToClipboard('0987654321', 'Nomor Rekening Mandiri')" class="p-2 bg-white hover:bg-gki-50 text-slate-600 hover:text-gki-700 rounded-lg border border-slate-200 transition shadow-sm cursor-pointer" title="Salin Nomor">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <button onclick="toggleQrisModal(false)" class="w-full mt-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-sm transition cursor-pointer">Tutup</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL / AREA CETAK LAPORAN BKU RESMI -->
-    <div id="printModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl relative border border-slate-100 my-8">
-            <div class="flex justify-between items-center pb-4 border-b border-slate-200 no-print">
-                <h3 class="text-lg font-bold text-slate-900"><i class="fas fa-print mr-2 text-gki-600"></i>Pratinjau Lembar Cetak BKU Resmi</h3>
-                <div class="flex items-center space-x-3">
-                    <button onclick="executePrint()" class="px-5 py-2.5 bg-gki-700 hover:bg-gki-800 text-white font-semibold rounded-xl text-sm shadow-md transition flex items-center space-x-2 cursor-pointer">
-                        <i class="fas fa-print"></i>
-                        <span>Cetak Sekarang</span>
-                         <button id="btnPdf" onclick="cetakLaporanBKU()" class="btn-cetak">
-                        🖨️ Cetak / Simpan ke PDF
-                    </button>
-                    <button onclick="togglePrintModal(false)" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition cursor-pointer">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-           
-</button>
-
-            <!-- PRINTABLE AREA (KOP SURAT, JUDUL, TABEL, TANDA TANGAN EDITABLE) -->
-            <div id="printArea" class="bg-white p-8 text-slate-800 space-y-6">
-                <!-- KOP GKI -->
-                <div class="flex items-center space-x-4 border-b-4 border-double border-slate-900 pb-6">
-                    <div class="w-16 h-16 bg-gki-700 text-white rounded-2xl flex items-center justify-center text-3xl font-bold shadow">
-                        <i class="fas fa-church"></i>
-                    </div>
-                    <div class="flex-1 text-center">
-                        <h2 class="text-sm font-bold tracking-widest uppercase text-slate-600">GEREJA KRISTEN INDONESIA (GKI)</h2>
-                        <h1 id="printChurchName" contenteditable="true" class="text-xl font-extrabold text-slate-900 outline-dashed outline-1 outline-transparent hover:outline-slate-300 px-2 py-0.5 rounded">GKI JEMAAT KASIH UTAMA</h1>
-                        <p class="text-xs text-slate-500">Laporan Buku Kas Umum (BKU) Periode Keuangan Jemaat</p>
-                    </div>
-                    <div class="text-right text-xs font-medium text-slate-600">
-                        <p>Tanggal Cetak:</p>
-                        <p id="printCurrentDate" class="font-bold text-slate-900"></p>
-                    </div>
-                </div>
-
-                <!-- RINGKASAN LAPORAN -->
-                <div class="grid grid-cols-4 gap-4 text-center">
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <p class="text-[10px] uppercase font-semibold text-slate-500">Total Pemasukan</p>
-                        <p id="repTotalIn" class="text-sm font-bold text-slate-900 mt-1">Rp 0</p>
-                    </div>
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <p class="text-[10px] uppercase font-semibold text-slate-500">Total Pengeluaran</p>
-                        <p id="repTotalOut" class="text-sm font-bold text-rose-600 mt-1">Rp 0</p>
-                    </div>
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <p class="text-[10px] uppercase font-semibold text-slate-500">Perpuluhan (Sinode)</p>
-                        <p id="repPerpuluhan" class="text-sm font-bold text-blue-600 mt-1">Rp 0</p>
-                    </div>
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                        <p class="text-[10px] uppercase font-semibold text-slate-500">Kas Jemaat</p>
-                        <p id="repKas" class="text-sm font-bold text-gki-700 mt-1">Rp 0</p>
-                    </div>
-                </div>
-
-                <!-- TABEL RINGKASAN PEMASUKAN & PENGELUARAN UNTUK CETAK -->
+            <!-- SIGNATURE SECTION -->
+            <div class="grid grid-cols-2 text-center text-xs mt-12 pt-4 font-bold text-black gap-8">
                 <div>
-                    <h4 class="text-xs font-bold uppercase text-slate-600 mb-2">A. Rekapitulasi Pemasukan</h4>
-                    <table class="w-full text-left text-xs border border-slate-300">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-300">
-                                <th class="p-2 border-r border-slate-300">Tanggal</th>
-                                <th class="p-2 border-r border-slate-300">Kategori</th>
-                                <th class="p-2 border-r border-slate-300">Uraian</th>
-                                <th class="p-2 text-right">Nominal</th>
-                            </tr>
-                        </thead>
-                        <tbody id="printTableInBody">
-                            <!-- Injected -->
-                        </tbody>
-                    </table>
+                    <p class="mb-16">MENGETAHUI<br>KETUA / WAKIL KETUA</p>
+                    <p id="print-sign-ketua" class="underline uppercase">Pnt. HERI REBA</p>
                 </div>
-
                 <div>
-                    <h4 class="text-xs font-bold uppercase text-slate-600 mb-2">B. Rekapitulasi Pengeluaran</h4>
-                    <table class="w-full text-left text-xs border border-slate-300">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-300">
-                                <th class="p-2 border-r border-slate-300">Tanggal</th>
-                                <th class="p-2 border-r border-slate-300">Kategori</th>
-                                <th class="p-2 border-r border-slate-300">Uraian</th>
-                                <th class="p-2 text-right">Nominal</th>
-                            </tr>
-                        </thead>
-                        <tbody id="printTableOutBody">
-                            <!-- Injected -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- TANDA TANGAN (BENDAHARA KIRI, KETUA KANAN) DENGAN EDIT MANUAL -->
-                <div class="pt-8 grid grid-cols-2 text-center text-xs page-break-inside-avoid">
-                    <div class="space-y-16">
-                        <div>
-                            <p class="font-semibold text-slate-600">Mengetahui / Bendahara Jemaat,</p>
-                        </div>
-                        <div>
-                            <div id="printBendaharaName" contenteditable="true" class="font-bold text-slate-900 outline-dashed outline-1 outline-transparent hover:outline-slate-300 py-1 inline-block">Bpk. Budi Santoso, S.E.</div>
-                            <div id="printBendaharaRole" class="text-slate-500 text-[11px]">Bendahara Jemaat GKI</div>
-                        </div>
-                    </div>
-                    <div class="space-y-16">
-                        <div>
-                            <p class="font-semibold text-slate-600">Majelis Jemaat GKI,</p>
-                        </div>
-                        <div>
-                            <div contenteditable="true" class="font-bold text-slate-900 outline-dashed outline-1 outline-transparent hover:outline-slate-300 py-1 inline-block">Pdt. Dr. Abraham Siregar, M.Th.</div>
-                            <div class="text-slate-500 text-[11px]">Ketua Badan Pengurus / Wakil Ketua</div>
-                        </div>
-                    </div>
+                    <p class="mb-16"><br>BENDAHARA</p>
+                    <p id="print-sign-bendahara" class="underline uppercase">Sym. EDWIN F. RAMAR</p>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
+            <!-- PAGE NUMBER STAMP -->
+            <div class="text-right text-[10px] text-slate-500 mt-6 font-mono">
+                Lembar: 1
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER NO-PRINT -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print">
+        <p>&copy; 2026 E-BKU DIRHAM 3 - Sistem Pengelolaan Kas Jemaat GKI. Rapi, Otomatis & Terstandar.</p>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // State Application
-        let currentUser = null;
-        let dataPemasukan = JSON.parse(localStorage.getItem('gki_pemasukan')) || [];
-        let dataPengeluaran = JSON.parse(localStorage.getItem('gki_pengeluaran')) || [];
+        // --- CONSTANTS & PRESETS ---
+        const CATEGORY_SPLIT_40_20_40 = [
+            'Pundi-Pundi',
+            'Pengucapan Syukur',
+            'Derma PAR',
+            'Derma Tunas',
+            'Derma PAM',
+            'Derma PW',
+            'Derma PKB',
+            'Derma Rayon 1',
+            'Derma Rayon 2',
+            'Derma Perjamuan Kudus',
+            'Derma KSP'
+        ];
 
-        // Initialize on DOM Ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup Event Listeners for Auth Switchers & Forms
-            document.getElementById('tabLoginBtn').addEventListener('click', () => switchAuthTab('login'));
-            document.getElementById('tabRegisterBtn').addEventListener('click', () => switchAuthTab('register'));
+        const PRESET_PENERIMAAN = [
+            ...CATEGORY_SPLIT_40_20_40,
+            'Perpuluhan',
+            'Diakonia',
+            'Pembangunan',
+            'Lain-Lain Penerimaan'
+        ];
+
+        const PRESET_PENGELUARAN = [
+            'Transpor Pelayan Firman',
+            'Transpor Pemain Musik',
+            'Insentif Guru Jemaat / Pendeta',
+            'Insentif Sekretaris',
+            'Insentif Bendahara',
+            'Insentif Wakil Ketua',
+            'Insentif Kostor Gereja',
+            'Beli Surat Sidi',
+            'Foto Copy',
+            'Air Aqua',
+            'Pulsa Listrik Gereja',
+            'Pulsa Listrik Rumah Pastori',
+            'Semen / Material Pembangunan',
+            'Sewa Spanduk',
+            'Lain-Lain Pengeluaran'
+        ];
+
+        // Default sample data based on original handwritten ledger
+        let sampleTransactions = [
+            // April Data (Previous Month)
+            { id: 101, date: '2026-04-06', type: 'penerimaan', category: 'Pundi-Pundi', description: 'Pundi-Pundi', amount: 329000, kodeMa: '' },
+            { id: 102, date: '2026-04-06', type: 'penerimaan', category: 'Diakonia', description: 'Diakonia', amount: 94000, kodeMa: '' },
+            { id: 103, date: '2026-04-06', type: 'penerimaan', category: 'Pembangunan', description: 'Pembangunan', amount: 230000, kodeMa: '' },
+            { id: 104, date: '2026-04-06', type: 'penerimaan', category: 'Pengucapan Syukur', description: 'Pengucapan Syukur', amount: 250000, kodeMa: '' },
+            { id: 105, date: '2026-04-06', type: 'pengeluaran', category: 'Transpor Pelayan Firman', description: 'Transpor Pelayan Firman', amount: 300000, kodeMa: '1' },
+            { id: 106, date: '2026-04-06', type: 'pengeluaran', category: 'Beli Surat Sidi', description: 'Beli Surat Sidi', amount: 160000, kodeMa: '' },
+            { id: 107, date: '2026-04-06', type: 'pengeluaran', category: 'Foto Copy', description: 'Foto Copy', amount: 25000, kodeMa: '' },
+            { id: 108, date: '2026-04-06', type: 'pengeluaran', category: 'Air Aqua', description: 'Air Aqua', amount: 62000, kodeMa: '' },
+            { id: 109, date: '2026-04-06', type: 'pengeluaran', category: 'Pulsa Listrik Gereja', description: 'Pulsa Listrik Gereja', amount: 200000, kodeMa: '' },
+            { id: 110, date: '2026-04-06', type: 'pengeluaran', category: 'Pulsa Listrik Rumah Pastori', description: 'Pulsa Listrik Rumah Pastori', amount: 105000, kodeMa: '' },
             
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            document.getElementById('registerForm').addEventListener('submit', handleRegister);
-            document.getElementById('demoModeBtn').addEventListener('click', handleDemoMode);
+            // May Data (Current Active Month)
+            { id: 1, date: '2026-05-02', type: 'penerimaan', category: 'Pundi-Pundi', description: 'Pundi-Pundi Ibadah Minggu', amount: 9223000, kodeMa: '' },
+            { id: 2, date: '2026-05-02', type: 'penerimaan', category: 'Perpuluhan', description: 'Perpuluhan Jemaat', amount: 1500000, kodeMa: '' },
+            { id: 3, date: '2026-05-02', type: 'penerimaan', category: 'Diakonia', description: 'Derma Diakonia', amount: 450000, kodeMa: '' },
+            { id: 4, date: '2026-05-10', type: 'pengeluaran', category: 'Insentif Guru Jemaat / Pendeta', description: 'Insentif Guru Jemaat', amount: 3500000, kodeMa: '2' },
+            { id: 5, date: '2026-05-10', type: 'pengeluaran', category: 'Transpor Pelayan Firman', description: 'Transpor Pelayan Firman', amount: 600000, kodeMa: '1' },
+            { id: 6, date: '2026-05-15', type: 'pengeluaran', category: 'Transpor Pemain Musik', description: 'Transpor Pemain Musik', amount: 400000, kodeMa: '' },
+            { id: 7, date: '2026-05-20', type: 'pengeluaran', category: 'Insentif Sekretaris', description: 'Insentif Sekretaris & Bendahara', amount: 2000000, kodeMa: '' },
+            { id: 8, date: '2026-05-25', type: 'pengeluaran', category: 'Insentif Kostor Gereja', description: 'Insentif Kostor', amount: 1000000, kodeMa: '' },
+            { id: 9, date: '2026-05-28', type: 'pengeluaran', category: 'Lain-Lain Pengeluaran', description: 'Operasional & Kebersihan', amount: 3614000, kodeMa: '' }
+        ];
 
-            // Check logged in user
-            const savedUser = localStorage.getItem('gki_current_user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    showDashboard();
-                } catch(err) {
-                    showAuth();
-                }
-            } else {
-                showAuth();
-            }
+        let transactions = [...sampleTransactions];
+        let currentUploadedLogo = null;
+        // DOM ELEMENTS LOGIN & REGISTER
+        const loginModal = document.getElementById('login-modal');
+        const loginFormContainer = document.getElementById('login-form-container');
+        const qrisContainer = document.getElementById('qris-container');
+        const tabLoginBtn = document.getElementById('tab-login-btn');
+        const tabRegisterBtn = document.getElementById('tab-register-btn');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginPassword = document.getElementById('login-password');
+        const backToLoginBtn = document.getElementById('back-to-login-btn');
+        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        const regPassword = document.getElementById('reg-password');
+        const toggleRegPassword = document.getElementById('toggle-reg-password');
+        const regEyeIcon = document.getElementById('reg-eye-icon');
 
-            // Set default date inputs to today
-            const today = new Date().toISOString().split('T')[0];
-            const inDateEl = document.getElementById('inDate');
-            const outDateEl = document.getElementById('outDate');
-            if(inDateEl) inDateEl.value = today;
-            if(outDateEl) outDateEl.value = today;
+        // Form inputs & actions
+        const txForm = document.getElementById('transaction-form');
+        const txId = document.getElementById('tx-id');
+        const txDate = document.getElementById('tx-date');
+        const txType = document.getElementById('tx-type');
+        const txCategoryPreset = document.getElementById('tx-category-preset');
+        const txDescription = document.getElementById('tx-description');
+        const txKodeMa = document.getElementById('tx-kode-ma');
+        const txAmount = document.getElementById('tx-amount');
+        const btnSaveTx = document.getElementById('btn-save-tx');
+        const btnCancelEdit = document.getElementById('btn-cancel-edit');
+        const btnResetData = document.getElementById('btn-reset-data');
+        const formModeBadge = document.getElementById('form-mode-badge');
+
+        // Filter elements
+        const filterMonth = document.getElementById('filter-month');
+        const filterYear = document.getElementById('filter-year');
+
+        // Config elements
+        const configKlasis = document.getElementById('config-klasis');
+        const configJemaat = document.getElementById('config-jemaat');
+        const configTahun = document.getElementById('config-tahun');
+        const configBulan = document.getElementById('config-bulan');
+        const configKetua = document.getElementById('config-ketua');
+        const configBendahara = document.getElementById('config-bendahara');
+
+        // Logo control elements
+        const logoUploadInput = document.getElementById('logo-upload-input');
+        const btnDownloadLogo = document.getElementById('btn-download-logo');
+        const btnDeleteLogo = document.getElementById('btn-delete-logo');
+
+        // Toggle Login / Register Tabs
+        tabLoginBtn.addEventListener('click', () => {
+            tabLoginBtn.className = 'w-1/2 py-2 border-b-2 border-emerald-700 text-emerald-800 transition-all';
+            tabRegisterBtn.className = 'w-1/2 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all';
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
         });
 
-        // Toast Notification System
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toastMessage');
-            const iconEl = document.getElementById('toastIcon');
-            
-            msgEl.innerText = message;
-            if(type === 'success') {
-                iconEl.className = 'fas fa-check-circle text-emerald-500 text-lg';
-            } else if(type === 'error') {
-                iconEl.className = 'fas fa-exclamation-circle text-rose-500 text-lg';
+        tabRegisterBtn.addEventListener('click', () => {
+            tabRegisterBtn.className = 'w-1/2 py-2 border-b-2 border-emerald-700 text-emerald-800 transition-all';
+            tabLoginBtn.className = 'w-1/2 py-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all';
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        // Register password toggle
+        toggleRegPassword.addEventListener('click', () => {
+            if (regPassword.type === 'password') {
+                regPassword.type = 'text';
+                regEyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                iconEl.className = 'fas fa-info-circle text-gki-500 text-lg';
+                regPassword.type = 'password';
+                regEyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
             }
+        });
 
-            toast.classList.remove('translate-x-full');
-            setTimeout(() => {
-                toast.classList.add('translate-x-full');
-            }, 3000);
-        }
-
-        // Auth Tab Switcher
-        function switchAuthTab(tab) {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            const tabLoginBtn = document.getElementById('tabLoginBtn');
-            const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-
-            if(tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                tabLoginBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all duration-200 cursor-pointer";
-                tabRegisterBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-all duration-200 cursor-pointer";
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                tabRegisterBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white text-slate-900 shadow-sm transition-all duration-200 cursor-pointer";
-                tabLoginBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-all duration-200 cursor-pointer";
-            }
-        }
-
-        // Handle Login Submission
-        function handleLogin(e) {
+        // Register Submission Handler
+        registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            if(!email) {
-                showToast('Harap masukkan Email / Username!', 'error');
-                return;
-            }
-            const name = email.includes('@') ? email.split('@')[0] : email;
-            currentUser = { 
-                name: name.charAt(0).toUpperCase() + name.slice(1), 
-                email: email,
-                role: 'Bendahara Jemaat'
-            };
-            localStorage.setItem('gki_current_user', JSON.stringify(currentUser));
-            showDashboard();
-            showToast('Selamat datang kembali di E-BKU GKI!', 'success');
-        }
+            const pass = regPassword.value;
+            const confirmPass = document.getElementById('reg-confirm-password').value;
 
-        // Handle Register Submission
-        function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('regName').value.trim();
-            const role = document.getElementById('regJabatan').value;
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-
-            if(!name || !email || !password) {
-                showToast('Harap lengkapi seluruh formulir pendaftaran!', 'error');
+            if (pass !== confirmPass) {
+                alert('Konfirmasi Kata Sandi tidak cocok! Silakan periksa kembali.');
                 return;
             }
 
-            currentUser = { 
-                name: name, 
-                role: role,
-                email: email 
-            };
-            localStorage.setItem('gki_current_user', JSON.stringify(currentUser));
-            showDashboard();
-            showToast('Pendaftaran akun baru berhasil!', 'success');
-        }
+            // Sync registered Jemaat & Klasis into configuration headers
+            const jemaatVal = document.getElementById('reg-jemaat').value;
+            const klasisVal = document.getElementById('reg-klasis').value;
+            if (jemaatVal) configJemaat.value = jemaatVal;
+            if (klasisVal) configKlasis.value = klasisVal;
+            syncPrintConfig();
 
-        // Handle Instant Demo Bypass Mode
-        function handleDemoMode() {
-            currentUser = {
-                name: 'Pnt. Budi Santoso',
-                role: 'Bendahara Jemaat',
-                email: 'bendahara@gki.org'
-            };
-            localStorage.setItem('gki_current_user', JSON.stringify(currentUser));
-            showDashboard();
-            showToast('Masuk dalam Mode Demo Bendahara.', 'success');
-        }
+            alert('Pendaftaran Berhasil! Silahkan lakukan pembayaran QRIS untuk aktivasi lisensi.');
+            loginFormContainer.classList.add('hidden');
+            qrisContainer.classList.remove('hidden');
+        });
 
-        // Handle Logout
-        function handleLogout() {
-            currentUser = null;
-            localStorage.removeItem('gki_current_user');
-            showAuth();
-            showToast('Berhasil keluar sistem.');
-        }
+        backToLoginBtn.addEventListener('click', () => {
+            qrisContainer.classList.add('hidden');
+            loginFormContainer.classList.remove('hidden');
+        });
 
-        function showDashboard() {
-            document.getElementById('authContainer').classList.add('hidden');
-            document.getElementById('dashboardContainer').classList.remove('hidden');
-            
-            if(currentUser) {
-                document.getElementById('userNameDisplay').innerText = currentUser.name || 'Bendahara';
-                document.getElementById('userRoleDisplay').innerText = currentUser.role || 'Bendahara Jemaat GKI';
-                document.getElementById('printBendaharaName').innerText = currentUser.name || 'Bendahara Jemaat';
-                document.getElementById('printBendaharaRole').innerText = currentUser.role || 'Bendahara Jemaat GKI';
-            }
-            renderAll();
-        }
+        confirmPaymentBtn.addEventListener('click', () => {
+            alert('Aktivasi Lisensi Berhasil! Anda memiliki akses penuh ke sistem DIRHAM 3.');
+            loginModal.classList.add('hidden');
+        });
 
-        function showAuth() {
-            document.getElementById('authContainer').classList.remove('hidden');
-            document.getElementById('dashboardContainer').classList.add('hidden');
-        }
-
-        // Switch Table Tabs
-        function switchTableTab(tab) {
-            const tableIn = document.getElementById('tableContainerIn');
-            const tableOut = document.getElementById('tableContainerOut');
-            const btnIn = document.getElementById('tableTabIn');
-            const btnOut = document.getElementById('tableTabOut');
-
-            if(tab === 'pemasukan') {
-                tableIn.classList.remove('hidden');
-                tableOut.classList.add('hidden');
-                btnIn.className = "py-3 px-6 text-sm font-bold text-gki-700 border-b-2 border-gki-600 transition cursor-pointer";
-                btnOut.className = "py-3 px-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition cursor-pointer";
-            } else {
-                tableIn.classList.add('hidden');
-                tableOut.classList.remove('hidden');
-                btnOut.className = "py-3 px-6 text-sm font-bold text-rose-600 border-b-2 border-rose-600 transition cursor-pointer";
-                btnIn.className = "py-3 px-6 text-sm font-semibold text-slate-500 hover:text-slate-900 transition cursor-pointer";
-            }
-        }
-
-        // Add Pemasukan with Automatic Calculation Rules
-        function handleTambahPemasukan(e) {
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const date = document.getElementById('inDate').value;
-            const kategori = document.getElementById('inKategori').value;
-            const uraian = document.getElementById('inUraian').value;
-            const nominal = parseFloat(document.getElementById('inNominal').value) || 0;
+            if (loginPassword.value.trim() === '') {
+                alert('Silahkan masukkan kata sandi.');
+                return;
+            }
+            // Unlock system
+            loginModal.classList.add('hidden');
+        });
 
-            // ATURAN OTOMATIS:
-            // 1. Perpuluhan = 100% Sinode
-            // 2. Diakonia, Pembangunan = 100% Jemaat
-            // 3. Lainnya / Umum (Pundi, Syukur, PAR, Tunas, PAM, PW, Rayon 1 & 2, PKB, Perjamuan Kudus): Klasis 20%, Sinode 40%, Jemaat 40%
-            let klasis = 0;
-            let sinode = 0;
-            let jemaat = 0;
+        logoutBtn.addEventListener('click', () => {
+            loginModal.classList.remove('hidden');
+        });
 
-            if(kategori === 'Perpuluhan') {
-                sinode = nominal;
-            } else if(kategori === 'Diakonia' || kategori === 'Pembangunan') {
-                jemaat = nominal;
+        // --- FORMATTER HELPER ---
+        function formatRp(val) {
+            return 'Rp ' + Number(val || 0).toLocaleString('id-ID');
+        }
+
+        function formatDateReadable(dStr) {
+            if (!dStr) return '';
+            const pts = dStr.split('-');
+            if (pts.length !== 3) return dStr;
+            return `${parseInt(pts[2])}/${parseInt(pts[1])}/${pts[0].substring(2)}`;
+        }
+
+        // --- PRESET CATEGORY POPULATOR ---
+        function updateCategoryPresets() {
+            txCategoryPreset.innerHTML = '';
+            const list = txType.value === 'penerimaan' ? PRESET_PENERIMAAN : PRESET_PENGELUARAN;
+            
+            list.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                txCategoryPreset.appendChild(opt);
+            });
+
+            txDescription.value = txCategoryPreset.value;
+        }
+
+        txType.addEventListener('change', updateCategoryPresets);
+        txCategoryPreset.addEventListener('change', () => {
+            txDescription.value = txCategoryPreset.value;
+        });
+
+        // --- CONFIG BINDINGS TO PRINT AREA ---
+        function syncPrintConfig() {
+            document.getElementById('print-klasis').textContent = configKlasis.value || 'KLASIS MANOKWARI';
+            document.getElementById('print-jemaat').textContent = configJemaat.value || 'JEMAAT G.K.I. PERSIAPAN GEWON ISRAEL';
+            document.getElementById('print-tahun').textContent = configTahun.value || '2026';
+            document.getElementById('print-bulan').textContent = configBulan.value || 'MEI';
+            document.getElementById('print-sign-ketua').textContent = configKetua.value || 'Pnt. HERI REBA';
+            document.getElementById('print-sign-bendahara').textContent = configBendahara.value || 'Sym. EDWIN F. RAMAR';
+        }
+
+        [configKlasis, configJemaat, configTahun, configBulan, configKetua, configBendahara].forEach(el => {
+            el.addEventListener('input', syncPrintConfig);
+        });
+
+        // Sync month filter with print header month name
+        filterMonth.addEventListener('change', () => {
+            const monthsNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+            configBulan.value = monthsNames[filterMonth.value];
+            syncPrintConfig();
+            renderAll();
+        });
+
+        filterYear.addEventListener('change', () => {
+            configTahun.value = filterYear.value;
+            syncPrintConfig();
+            renderAll();
+        });
+
+        // --- LOGO MANAGEMENT ---
+        logoUploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    currentUploadedLogo = evt.target.result;
+                    applyLogoState();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        btnDeleteLogo.addEventListener('click', () => {
+            currentUploadedLogo = 'deleted';
+            applyLogoState();
+        });
+
+        btnDownloadLogo.addEventListener('click', () => {
+            if (currentUploadedLogo && currentUploadedLogo !== 'deleted') {
+                const a = document.createElement('a');
+                a.href = currentUploadedLogo;
+                a.download = 'logo-gereja.png';
+                a.click();
             } else {
-                klasis = nominal * 0.20;
-                sinode = nominal * 0.40;
-                jemaat = nominal * 0.40;
+                alert('Logo SVG default aktif. Unggah gambar logo terlebih dahulu untuk mengunduh.');
             }
+        });
 
-            const item = {
-                id: Date.now(),
-                date,
-                kategori,
-                uraian,
-                nominal,
-                klasis,
-                sinode,
-                jemaat
-            };
+        function applyLogoState() {
+            const printSvg = document.getElementById('print-logo-svg');
+            const printImg = document.getElementById('print-logo-img');
+            const previewBox = document.getElementById('logo-preview-box');
 
-            dataPemasukan.push(item);
-            localStorage.setItem('gki_pemasukan', JSON.stringify(dataPemasukan));
-            
-            document.getElementById('pemasukanForm').reset();
-            document.getElementById('inDate').value = new Date().toISOString().split('T')[0];
-            
-            renderAll();
-            showToast('Pemasukan berhasil disimpan dan dihitung otomatis!', 'success');
-        }
-
-        // Add Pengeluaran
-        function handleTambahPengeluaran(e) {
-            e.preventDefault();
-            const date = document.getElementById('outDate').value;
-            const kategori = document.getElementById('outKategori').value;
-            const uraian = document.getElementById('outUraian').value;
-            const nominal = parseFloat(document.getElementById('outNominal').value) || 0;
-            const fileInput = document.getElementById('outBukti');
-
-            let buktiName = 'Tidak ada bukti';
-            let buktiUrl = '#';
-
-            if(fileInput.files && fileInput.files[0]) {
-                buktiName = fileInput.files[0].name;
-                buktiUrl = URL.createObjectURL(fileInput.files[0]);
-            }
-
-            const item = {
-                id: Date.now(),
-                date,
-                kategori,
-                uraian,
-                nominal,
-                buktiName,
-                buktiUrl
-            };
-
-            dataPengeluaran.push(item);
-            localStorage.setItem('gki_pengeluaran', JSON.stringify(dataPengeluaran));
-
-            document.getElementById('pengeluaranForm').reset();
-            document.getElementById('outDate').value = new Date().toISOString().split('T')[0];
-
-            renderAll();
-            showToast('Pengeluaran dan bukti berhasil disimpan!', 'success');
-        }
-
-        // Delete Pemasukan
-        function hapusPemasukan(id) {
-            dataPemasukan = dataPemasukan.filter(item => item.id !== id);
-            localStorage.setItem('gki_pemasukan', JSON.stringify(dataPemasukan));
-            renderAll();
-            showToast('Data pemasukan dihapus.');
-        }
-
-        // Delete Pengeluaran
-        function hapusPengeluaran(id) {
-            dataPengeluaran = dataPengeluaran.filter(item => item.id !== id);
-            localStorage.setItem('gki_pengeluaran', JSON.stringify(dataPengeluaran));
-            renderAll();
-            showToast('Data pengeluaran dihapus.');
-        }
-
-        // Reset All Data
-        function resetDataTransaksi() {
-            if(confirm("Apakah Anda yakin ingin mereset seluruh data transaksi keuangan BKU?")) {
-                dataPemasukan = [];
-                dataPengeluaran = [];
-                localStorage.removeItem('gki_pemasukan');
-                localStorage.removeItem('gki_pengeluaran');
-                renderAll();
-                showToast('Seluruh data BKU telah direset.', 'success');
+            if (currentUploadedLogo === 'deleted') {
+                printSvg.classList.add('hidden');
+                printImg.classList.add('hidden');
+                previewBox.innerHTML = '<span class="text-[10px] text-slate-400">Tanpa Logo</span>';
+            } else if (currentUploadedLogo) {
+                printSvg.classList.add('hidden');
+                printImg.classList.remove('hidden');
+                printImg.src = currentUploadedLogo;
+                previewBox.innerHTML = `<img src="${currentUploadedLogo}" class="w-full h-full object-contain">`;
+            } else {
+                printSvg.classList.remove('hidden');
+                printImg.classList.add('hidden');
+                previewBox.innerHTML = `
+                    <svg class="w-10 h-10 text-emerald-800" viewBox="0 0 100 100" fill="currentColor">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="6"/>
+                        <path d="M50 15 V85 M25 35 H75" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                    </svg>`;
             }
         }
 
-        // Render All Tables and Cards
+        // --- MAIN CALCULATION & RENDER ENGINE ---
         function renderAll() {
-            // Render Pemasukan Table
-            const tbodyIn = document.getElementById('listPemasukanBody');
-            tbodyIn.innerHTML = '';
-            let totalPemasukan = 0;
-            let totalPerpuluhan = 0;
-            let totalKlasis = 0;
-            let totalSinodeAll = 0;
-            let totalJemaatAll = 0;
+            const selectedMonth = parseInt(filterMonth.value);
+            const selectedYear = parseInt(filterYear.value);
 
-            dataPemasukan.forEach(item => {
-                totalPemasukan += item.nominal;
-                if(item.kategori === 'Perpuluhan') totalPerpuluhan += item.nominal;
-                totalKlasis += item.klasis;
-                totalSinodeAll += item.sinode;
-                totalJemaatAll += item.jemaat;
+            // Filter Current Month & Previous Months
+            let totalBlnIniPenerimaan = 0;
+            let totalBlnIniPengeluaran = 0;
 
-                tbodyIn.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="p-4 text-slate-600 font-medium">${item.date}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 ${item.kategori === 'Perpuluhan' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-gki-50 text-gki-700'} rounded-lg text-xs font-bold">${item.kategori}</span></td>
-                        <td class="p-4 text-slate-800">${item.uraian}</td>
-                        <td class="p-4 text-right font-bold text-slate-900">Rp ${item.nominal.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center text-xs text-indigo-600 font-medium">Rp ${item.klasis.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center text-xs text-blue-600 font-medium">Rp ${item.sinode.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center text-xs text-emerald-600 font-medium">Rp ${item.jemaat.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="hapusPemasukan(${item.id})" class="p-2 bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition cursor-pointer" title="Hapus">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            let totalBlnLaluPenerimaan = 0;
+            let totalBlnLaluPengeluaran = 0;
+
+            let dermaTerbagiTotal = 0;
+            let perpuluhanTotal = 0;
+            let kasJemaatMurniPenerimaan = 0;
+
+            const currentMonthTransactions = [];
+
+            transactions.forEach(tx => {
+                const txDateObj = new Date(tx.date);
+                const txM = txDateObj.getMonth();
+                const txY = txDateObj.getFullYear();
+
+                if (txY === selectedYear) {
+                    if (txM < selectedMonth) {
+                        // S/D Bulan Lalu
+                        if (tx.type === 'penerimaan') totalBlnLaluPenerimaan += Number(tx.amount);
+                        if (tx.type === 'pengeluaran') totalBlnLaluPengeluaran += Number(tx.amount);
+                    } else if (txM === selectedMonth) {
+                        // Bulan Ini
+                        currentMonthTransactions.push(tx);
+                        if (tx.type === 'penerimaan') {
+                            const amt = Number(tx.amount);
+                            totalBlnIniPenerimaan += amt;
+
+                            // Splits: 40% Sinode, 20% Klasis, 40% Jemaat
+                            if (CATEGORY_SPLIT_40_20_40.includes(tx.category)) {
+                                dermaTerbagiTotal += amt;
+                            } else if (tx.category === 'Perpuluhan') {
+                                // 100% Setor Ke Sinode
+                                perpuluhanTotal += amt;
+                            } else {
+                                // Direct Jemaat Incomes (Diakonia, Pembangunan, etc.)
+                                kasJemaatMurniPenerimaan += amt;
+                            }
+                        } else if (tx.type === 'pengeluaran') {
+                            totalBlnIniPengeluaran += Number(tx.amount);
+                        }
+                    }
+                } else if (txY < selectedYear) {
+                    // Previous years accumulated into s/d Bulan Lalu
+                    if (tx.type === 'penerimaan') totalBlnLaluPenerimaan += Number(tx.amount);
+                    if (tx.type === 'pengeluaran') totalBlnLaluPengeluaran += Number(tx.amount);
+                }
             });
 
-            if(dataPemasukan.length === 0) {
-                tbodyIn.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">Belum ada data pemasukan tercatat.</td></tr>`;
+            // Card Breakdown Calculations
+            const sinode40 = dermaTerbagiTotal * 0.40;
+            const klasis20 = dermaTerbagiTotal * 0.20;
+            const jemaat40Derma = dermaTerbagiTotal * 0.40;
+            const totalKasJemaatPenerimaan = jemaat40Derma + kasJemaatMurniPenerimaan;
+
+            const totalSemuaPenerimaan = totalBlnIniPenerimaan + totalBlnLaluPenerimaan;
+            const totalSemuaPengeluaran = totalBlnIniPengeluaran + totalBlnLaluPengeluaran;
+            const sisaSaldoFinal = totalSemuaPenerimaan - totalSemuaPengeluaran;
+
+            // Render KPI Cards
+            document.getElementById('card-total-pemasukan').textContent = formatRp(totalBlnIniPenerimaan);
+            document.getElementById('card-sinode').textContent = formatRp(sinode40);
+            document.getElementById('card-perpuluhan').textContent = formatRp(perpuluhanTotal);
+            document.getElementById('card-klasis').textContent = formatRp(klasis20);
+            document.getElementById('card-kas-jemaat').textContent = formatRp(totalKasJemaatPenerimaan);
+            document.getElementById('card-total-pengeluaran').textContent = formatRp(totalBlnIniPengeluaran);
+            document.getElementById('card-sisa-saldo').textContent = formatRp(sisaSaldoFinal);
+
+            // Render Interactive Screen Table & Print Ledger Table
+            renderTables(currentMonthTransactions, {
+                penerimaanBlnIni: totalBlnIniPenerimaan,
+                pengeluaranBlnIni: totalBlnIniPengeluaran,
+                penerimaanBlnLalu: totalBlnLaluPenerimaan,
+                pengeluaranBlnLalu: totalBlnLaluPengeluaran,
+                penerimaanSemua: totalSemuaPenerimaan,
+                pengeluaranSemua: totalSemuaPengeluaran,
+                sisaSaldo: sisaSaldoFinal
+            });
+        }
+
+        function renderTables(monthTxList, totals) {
+            const screenTbody = document.getElementById('screen-tx-tbody');
+            const printTbody = document.getElementById('print-ledger-tbody');
+
+            screenTbody.innerHTML = '';
+            printTbody.innerHTML = '';
+
+            document.getElementById('tx-count').textContent = monthTxList.length;
+
+            if (monthTxList.length === 0) {
+                screenTbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada transaksi di bulan ini.</td></tr>`;
+                printTbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center border border-black italic">Belum ada transaksi recorded untuk periode ini.</td></tr>`;
             }
 
-            // Render Pengeluaran Table
-            const tbodyOut = document.getElementById('listPengeluaranBody');
-            tbodyOut.innerHTML = '';
-            let totalPengeluaran = 0;
+            monthTxList.forEach((tx, idx) => {
+                const isPenerimaan = tx.type === 'penerimaan';
+                const penVal = isPenerimaan ? formatRp(tx.amount) : '-';
+                const pengVal = !isPenerimaan ? formatRp(tx.amount) : '-';
 
-            dataPengeluaran.forEach(item => {
-                totalPengeluaran += item.nominal;
-                tbodyOut.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="p-4 text-slate-600 font-medium">${item.date}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 bg-rose-50 text-rose-700 rounded-lg text-xs font-semibold">${item.kategori}</span></td>
-                        <td class="p-4 text-slate-800">${item.uraian}</td>
-                        <td class="p-4 text-right font-bold text-rose-600">Rp ${item.nominal.toLocaleString('id-ID')}</td>
-                        <td class="p-4 text-center">
-                            ${item.buktiName !== 'Tidak ada bukti' ? `<a href="${item.buktiUrl}" target="_blank" class="text-xs text-gki-700 font-semibold underline hover:text-gki-800"><i class="fas fa-file-alt mr-1"></i>${item.buktiName}</a>` : `<span class="text-xs text-slate-400">Tanpa Bukti</span>`}
-                        </td>
-                        <td class="p-4 text-center">
-                            <button onclick="hapusPengeluaran(${item.id})" class="p-2 bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition cursor-pointer" title="Hapus">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
+                // Screen Table Row
+                const trScreen = document.createElement('tr');
+                trScreen.className = 'hover:bg-slate-50 border-b border-slate-100';
+                trScreen.innerHTML = `
+                    <td class="p-3 text-center font-mono text-slate-500">${idx + 1}</td>
+                    <td class="p-3 whitespace-nowrap">${formatDateReadable(tx.date)}</td>
+                    <td class="p-3 font-medium text-slate-800">${tx.description}</td>
+                    <td class="p-3 text-center text-slate-500 font-mono">${tx.kodeMa || '-'}</td>
+                    <td class="p-3 text-right font-semibold text-emerald-700">${penVal}</td>
+                    <td class="p-3 text-right font-semibold text-rose-600">${pengVal}</td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="editTx(${tx.id})" class="p-1 text-blue-600 hover:text-blue-800" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteTx(${tx.id})" class="p-1 text-red-600 hover:text-red-800" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                    </td>
                 `;
+                screenTbody.appendChild(trScreen);
+
+                // Printable DIRHAM 3 Row
+                const trPrint = document.createElement('tr');
+                trPrint.innerHTML = `
+                    <td class="text-center border border-black py-1 px-1 font-mono">${idx + 1}</td>
+                    <td class="text-center border border-black py-1 px-1 font-mono">${formatDateReadable(tx.date)}</td>
+                    <td class="border border-black py-1 px-2 uppercase font-medium">${tx.description}</td>
+                    <td class="text-center border border-black py-1 px-1 font-mono">${tx.kodeMa || ''}</td>
+                    <td class="text-right border border-black py-1 px-2 font-mono">${isPenerimaan ? formatRp(tx.amount) : ''}</td>
+                    <td class="text-right border border-black py-1 px-2 font-mono">${!isPenerimaan ? formatRp(tx.amount) : ''}</td>
+                `;
+                printTbody.appendChild(trPrint);
             });
 
-            if(dataPengeluaran.length === 0) {
-                tbodyOut.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada data pengeluaran tercatat.</td></tr>`;
+            // Update DIRHAM 3 Print Footer Totals
+            document.getElementById('sum-penerimaan-bln-ini').textContent = formatRp(totals.penerimaanBlnIni);
+            document.getElementById('sum-pengeluaran-bln-ini').textContent = formatRp(totals.pengeluaranBlnIni);
+
+            document.getElementById('sum-penerimaan-bln-lalu').textContent = formatRp(totals.penerimaanBlnLalu);
+            document.getElementById('sum-pengeluaran-bln-lalu').textContent = formatRp(totals.pengeluaranBlnLalu);
+
+            document.getElementById('sum-penerimaan-semua').textContent = formatRp(totals.penerimaanSemua);
+            document.getElementById('sum-pengeluaran-semua').textContent = formatRp(totals.pengeluaranSemua);
+
+            document.getElementById('sum-sisa-saldo-final').textContent = formatRp(totals.sisaSaldo);
+            document.getElementById('print-statement-saldo').textContent = formatRp(totals.sisaSaldo);
+        }
+
+        // --- CRUD OPERATIONS ---
+        txForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const idVal = txId.value;
+            const newTx = {
+                id: idVal ? parseInt(idVal) : Date.now(),
+                date: txDate.value,
+                type: txType.value,
+                category: txCategoryPreset.value,
+                description: txDescription.value,
+                kodeMa: txKodeMa.value,
+                amount: parseFloat(txAmount.value)
+            };
+
+            if (idVal) {
+                // Update Existing
+                const index = transactions.findIndex(t => t.id === parseInt(idVal));
+                if (index !== -1) transactions[index] = newTx;
+            } else {
+                // Insert New
+                transactions.push(newTx);
             }
 
-            // Update Counts in tabs
-            document.getElementById('countIn').innerText = dataPemasukan.length;
-            document.getElementById('countOut').innerText = dataPengeluaran.length;
+            resetTxForm();
+            renderAll();
+        });
 
-            // Hitung Kas Jemaat Aktif (Total Alokasi Jemaat - Total Pengeluaran)
-            const kasJemaatAktif = totalJemaatAll - totalPengeluaran;
+        window.editTx = function(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
 
-            // Update Cards Dashboard
-            document.getElementById('cardTotalPemasukan').innerText = `Rp ${totalPemasukan.toLocaleString('id-ID')}`;
-            document.getElementById('cardPerpuluhan').innerText = `Rp ${totalPerpuluhan.toLocaleString('id-ID')}`;
-            document.getElementById('cardKasJemaat').innerText = `Rp ${kasJemaatAktif.toLocaleString('id-ID')}`;
-            document.getElementById('cardTotalPengeluaran').innerText = `Rp ${totalPengeluaran.toLocaleString('id-ID')}`;
-            document.getElementById('cardKlasis').innerText = `Rp ${totalKlasis.toLocaleString('id-ID')}`;
-            document.getElementById('cardSinode').innerText = `Rp ${totalSinodeAll.toLocaleString('id-ID')}`;
-            document.getElementById('cardJemaatAlokasi').innerText = `Rp ${totalJemaatAll.toLocaleString('id-ID')}`;
+            txId.value = tx.id;
+            txDate.value = tx.date;
+            txType.value = tx.type;
+            updateCategoryPresets();
+            txCategoryPreset.value = tx.category;
+            txDescription.value = tx.description;
+            txKodeMa.value = tx.kodeMa || '';
+            txAmount.value = tx.amount;
 
-            // Update Breakdown Sinode text
-            const sinodeUmum = totalSinodeAll - totalPerpuluhan;
-            document.getElementById('sinodeBreakdown').innerText = `Rp ${sinodeUmum.toLocaleString('id-ID')} (40%) + Rp ${totalPerpuluhan.toLocaleString('id-ID')} (Perpuluhan)`;
+            formModeBadge.textContent = 'Mode: Edit Transaksi ID #' + tx.id;
+            formModeBadge.className = 'bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-medium';
+            btnSaveTx.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Transaksi';
+            btnCancelEdit.classList.remove('hidden');
+
+            txForm.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Modal QRIS Toggle
-        function toggleQrisModal(show) {
-            const modal = document.getElementById('qrisModal');
-            if(show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
+        window.deleteTx = function(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                renderAll();
+            }
         }
 
-        // Copy to clipboard helper
-        function copyToClipboard(text, label) {
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = text;
-            dummy.select();
-            document.execCommand("copy");
-            document.body.removeChild(dummy);
-            showToast(`${label} berhasil disalin!`, 'success');
+        btnCancelEdit.addEventListener('click', resetTxForm);
+
+        function resetTxForm() {
+            txId.value = '';
+            txForm.reset();
+            const today = new Date().toISOString().split('T')[0];
+            txDate.value = today;
+            formModeBadge.textContent = 'Mode: Tambah Baru';
+            formModeBadge.className = 'bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-medium';
+            btnSaveTx.innerHTML = '<i class="fa-solid fa-plus"></i> Simpan Transaksi';
+            btnCancelEdit.classList.add('hidden');
+            updateCategoryPresets();
         }
 
-        // Modal Print Toggle & Render Report Content
-        function bukaModalCetak() {
-            let totalIn = dataPemasukan.reduce((acc, curr) => acc + curr.nominal, 0);
-            let totalOut = dataPengeluaran.reduce((acc, curr) => acc + curr.nominal, 0);
-            let totalPerp = dataPemasukan.filter(i => i.kategori === 'Perpuluhan').reduce((acc, curr) => acc + curr.nominal, 0);
-            let totalJemaat = dataPemasukan.reduce((acc, curr) => acc + curr.jemaat, 0);
-            let kasAktif = totalJemaat - totalOut;
+        btnResetData.addEventListener('click', () => {
+            if (confirm('Kembalikan ke contoh transaksi awal?')) {
+                transactions = [...sampleTransactions];
+                renderAll();
+            }
+        });
 
-            document.getElementById('repTotalIn').innerText = `Rp ${totalIn.toLocaleString('id-ID')}`;
-            document.getElementById('repTotalOut').innerText = `Rp ${totalOut.toLocaleString('id-ID')}`;
-            document.getElementById('repPerpuluhan').innerText = `Rp ${totalPerp.toLocaleString('id-ID')}`;
-            document.getElementById('repKas').innerText = `Rp ${kasAktif.toLocaleString('id-ID')}`;
-
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('printCurrentDate').innerText = new Date().toLocaleDateString('id-ID', options);
-
-            const printInBody = document.getElementById('printTableInBody');
-            printInBody.innerHTML = '';
-            dataPemasukan.forEach(item => {
-                printInBody.innerHTML += `
-                    <tr class="border-b border-slate-200">
-                        <td class="p-1.5 border-r border-slate-200">${item.date}</td>
-                        <td class="p-1.5 border-r border-slate-200">${item.kategori}</td>
-                        <td class="p-1.5 border-r border-slate-200">${item.uraian}</td>
-                        <td class="p-1.5 text-right font-bold">Rp ${item.nominal.toLocaleString('id-ID')}</td>
-                    </tr>
-                `;
-            });
-            if(dataPemasukan.length === 0) printInBody.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-slate-400">Tidak ada data</td></tr>`;
-
-            const printOutBody = document.getElementById('printTableOutBody');
-            printOutBody.innerHTML = '';
-            dataPengeluaran.forEach(item => {
-                printOutBody.innerHTML += `
-                    <tr class="border-b border-slate-200">
-                        <td class="p-1.5 border-r border-slate-200">${item.date}</td>
-                        <td class="p-1.5 border-r border-slate-200">${item.kategori}</td>
-                        <td class="p-1.5 border-r border-slate-200">${item.uraian}</td>
-                        <td class="p-1.5 text-right font-bold text-rose-600">Rp ${item.nominal.toLocaleString('id-ID')}</td>
-                    </tr>
-                `;
-            });
-            if(dataPengeluaran.length === 0) printOutBody.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-slate-400">Tidak ada data</td></tr>`;
-
-            document.getElementById('printModal').classList.remove('hidden');
-        }
-
-        function togglePrintModal(show) {
-            const modal = document.getElementById('printModal');
-            if(show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
-        }
-
-        function executePrint() {
-            window.print();
-        }
-        function cetakLaporanBKU() {
-    // Anda bisa menyembunyikan tombol lain (seperti tombol edit/hapus) saat dicetak
-    window.print();
-}
+        // --- INITIALIZATION ON LOAD ---
+        window.onload = function() {
+            txDate.value = new Date().toISOString().split('T')[0];
+            updateCategoryPresets();
+            syncPrintConfig();
+            renderAll();
+        };
     </script>
-    <!-- ======================================================= -->
-<!-- POPUP / MODAL PEMBAYARAN QRIS -->
-<!-- ======================================================= -->
-<div id="payment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 99999; justify-content: center; align-items: center;">
-  <div style="background: #ffffff; padding: 30px; border-radius: 12px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-family: sans-serif;">
-    <h2 style="margin-top:0; color:#333;">Aktivasi BKU Gereja</h2>
-    <p style="color:#666; font-size: 14px;">Masa langganan 360 hari/ 1 Tahun akses akun Anda belum aktif. Silakan lakukan pembayaran via QRIS untuk mengaktifkan aplikasi.</p>
-    
-    <div style="margin: 20px 0;">
-      <p style="margin-bottom: 5px; font-size: 13px; color: #888;">Akun Terdeteksi:</p>
-      <strong id="modal-user-email" style="font-size: 16px; color: #007bff;">-</strong>
-    </div>
-
-    <!-- Tombol Buat QRIS -->
-    <button id="modal-pay-btn" onclick="generateQRIS()" style="width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;">
-      Bayar via QRIS (Rp 300000)
-    </button>
-
-    <!-- Tempat Gambar QRIS -->
-    <div id="modal-qris-area" style="display: none; margin-top: 15px;">
-      <p style="font-size: 13px; font-weight: bold;">Scan QRIS di bawah ini:</p>
-      <img id="modal-qris-img" src="" alt="QRIS" style="max-width: 220px; width: 100%; border: 1px solid #ddd; padding: 5px; border-radius: 8px;">
-      <p id="modal-status-text" style="color: #d9534f; font-weight: bold; margin-top: 10px; font-size: 14px;">Menunggu Pembayaran...</p>
-    </div>
-  </div>
-</div>
-    <script>
-  // URL Backend Google Apps Script Anda
-  const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxqxDvWJRVixdhZtPVpeunqvh8hWjmOtKDDgbUYP85xCuJSIYeTUl44OecMQgUG6p5u/exec';
-
-  let activeUserId = ''; 
-  let checkStatusInterval;
-
-  // FUNGSI DIPANGGIL SAAT USER BERHASIL LOGIN
-  function onUserLoginSuccess(userEmail) {
-    activeUserId = userEmail;
-    document.getElementById('modal-user-email').innerText = activeUserId;
-
-    // Cek status langganan di Firebase via GAS
-    checkInitialSubscription(userEmail);
-  }
-
-  async function checkInitialSubscription(userId) {
-    try {
-      const res = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&userId=${encodeURIComponent(userId)}`);
-      const data = await res.json();
-
-      if (data.status === 'PAID' || data.paid === true) {
-        // Jika SUDAH BAYAR: Sembunyikan Modal, Izinkan Masuk
-        document.getElementById('payment-modal').style.display = 'none';
-      } else {
-        // Jika BELUM BAYAR: Tampilkan Modal Kunci Pembayaran
-        document.getElementById('payment-modal').style.display = 'flex';
-      }
-    } catch (err) {
-      console.error('Gagal mengecek status langganan:', err);
-      document.getElementById('payment-modal').style.display = 'flex';
-    }
-  }
-
-  // FUNGSI MEMBUAT QRIS DARI DALAM MODAL
-  async function generateQRIS() {
-    const payBtn = document.getElementById('modal-pay-btn');
-    payBtn.disabled = true;
-    payBtn.innerText = 'Membuat QRIS...';
-
-    try {
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          action: 'createTransaction',
-          paymentAmount: 300000, 
-          merchantOrderId: 'INV-' + Date.now(),
-          productDetails: 'Langganan BKU Gereja 360 hari 1 Tahun',
-          email: activeUserId
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.statusCode === "00" && data.qrString) {
-      const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(data.qrString)}`;
-        document.getElementById('modal-qris-img').src = qrImgUrl;
-        document.getElementById('modal-qris-area').style.display = 'block';
-        payBtn.style.display = 'none';
-
-        listenForPaymentSuccess(data.merchantOrderId, activeUserId);
-      } else {
-        alert('Gagal membuat QRIS: ' + (data.statusMessage || 'Terjadi kesalahan'));
-        payBtn.disabled = false;
-        payBtn.innerText = 'Bayar via QRIS';
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Terjadi kesalahan koneksi.');
-      payBtn.disabled = false;
-      payBtn.innerText = 'Bayar via QRIS';
-    }
-  }
-
-  // CEK PEMBAYARAN OTOMATIS BERKALA (EVERY 3 DETIK)
-  function listenForPaymentSuccess(orderId, userId) {
-    checkStatusInterval = setInterval(async () => {
-      try {
-        const res = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&orderId=${orderId}&userId=${encodeURIComponent(userId)}`);
-        const result = await res.json();
-
-        if (result.status === 'PAID' || result.paid === true) {
-          clearInterval(checkStatusInterval);
-          document.getElementById('modal-status-text').innerText = ' Pembayaran Berhasil! Mengaktifkan aplikasi...';
-          document.getElementById('modal-status-text').style.color = '#28a745';
-
-          setTimeout(() => {
-            document.getElementById('payment-modal').style.display = 'none';
-            alert('Selamat! Akun Anda telah aktif, silakan gunakan aplikasi BKU Gereja.');
-          }, 1500);
-        }
-      } catch (err) {
-        console.log('Mengecek status...', err);
-      }
-    }, 3000);
-  }
-      // Otomatis mendeteksi submit form login atau klik tombol login
-document.addEventListener('DOMContentLoaded', function() {
-  const loginForm = document.querySelector('form'); // Mencari form login di halaman
-  
-  if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
-      // Ambil nilai dari input pertama (biasanya username/email)
-      const inputEmail = loginForm.querySelector('input[type="text"], input[type="email"]');
-      if (inputEmail && inputEmail.value) {
-        // Panggil sistem kunci/pembayaran QRIS
-        onUserLoginSuccess(inputEmail.value);
-      }
-    });
-  }
-});  
-</script>
 </body>
 </html>
