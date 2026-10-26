@@ -606,6 +606,10 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
+        // --- KONFIGURASI LINK GOOGLE APPS SCRIPT (WEB APP URL) ---
+        // Tempelkan URL Deploy Web App Apps Script Anda di bawah ini:
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwcwvf0NYBGpwZyi6GWmXpboVepqQarahnZ1att4t4LAQnnRGk-Dwoen53QpHpAaoovww/exec";
+
         // --- CONSTANTS & PRESETS ---
         const CATEGORY_SPLIT_40_20_40 = [
             'Pundi-Pundi',
@@ -751,7 +755,7 @@
         });
 
         // Register Submission Handler
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const pass = regPassword.value;
             const confirmPass = document.getElementById('reg-confirm-password').value;
@@ -764,9 +768,34 @@
             // Sync registered Jemaat & Klasis into configuration headers
             const jemaatVal = document.getElementById('reg-jemaat').value;
             const klasisVal = document.getElementById('reg-klasis').value;
+            const emailVal = document.getElementById('reg-email').value;
+            const nameVal = document.getElementById('reg-fullname').value;
+            
             if (jemaatVal) configJemaat.value = jemaatVal;
             if (klasisVal) configKlasis.value = klasisVal;
             syncPrintConfig();
+
+            // Request pembuatan QRIS ke Apps Script (jika URL sudah diisi)
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("AKfycbx...")) {
+                try {
+                    const response = await fetch(GAS_WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            action: "createQrisPayment",
+                            email: emailVal,
+                            customerName: nameVal,
+                            amount: 150000,
+                            productDetails: `Aktivasi E-BKU DIRHAM 3 - ${jemaatVal}`
+                        })
+                    });
+                    const resData = await response.json();
+                    if (resData.success && resData.qrString) {
+                        console.log("QRIS Generated:", resData.qrString);
+                    }
+                } catch (err) {
+                    console.error("Gagal terhubung ke Apps Script:", err);
+                }
+            }
 
             alert('Pendaftaran Berhasil! Silahkan lakukan pembayaran QRIS untuk aktivasi lisensi.');
             loginFormContainer.classList.add('hidden');
