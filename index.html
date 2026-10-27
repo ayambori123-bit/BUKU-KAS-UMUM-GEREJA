@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -162,8 +164,8 @@
                         <input type="text" id="reg-klasis" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 text-xs" placeholder="KLASIS MANOKWARI" required>
                     </div>
 
-                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl text-xs transition-all duration-200 shadow flex items-center justify-center gap-2 mt-2">
-                        <i class="fa-solid fa-user-plus"></i> Daftar & Lanjut Pembayaran
+                    <button type="submit" id="btn-submit-reg" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl text-xs transition-all duration-200 shadow flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-solid fa-user-plus"></i> Daftar & Generate QRIS
                     </button>
                 </form>
 
@@ -177,34 +179,21 @@
             <!-- QRIS Paywall View -->
             <div id="qris-container" class="p-6 hidden text-center">
                 <span class="inline-block bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-medium mb-3">Aktivasi Berlangganan Web/App</span>
-                <h3 class="text-lg font-bold text-slate-800">Scan QRIS Untuk Aktivasi</h3>
-                <p class="text-xs text-slate-500 mt-1 mb-4">Pindai kode QR dibawah menggunakan aplikasi E-Wallet atau Mobile Banking Anda.</p>
+                <h3 class="text-lg font-bold text-slate-800">Scan QRIS Duitku Untuk Aktivasi</h3>
+                <p class="text-xs text-slate-500 mt-1 mb-4">Pindai kode QR dibawah menggunakan GoPay, OVO, ShopeePay, Dana, atau Mobile Banking Anda.</p>
                 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mb-4">
-                    <!-- Dynamic QRIS Mock SVG -->
-                    <svg class="w-44 h-44 mx-auto" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="200" height="200" fill="white" rx="8"/>
-                        <path d="M20 20H80V80H20V20ZM35 35V65H65V35H35Z" fill="#1e293b"/>
-                        <path d="M42 42H58V58H42V42Z" fill="#1e293b"/>
-                        <path d="M120 20H180V80H120V20ZM135 35V65H165V35H135Z" fill="#1e293b"/>
-                        <path d="M142 42H158V58H142V42Z" fill="#1e293b"/>
-                        <path d="M20 120H80V180H20V120ZM35 135V165H65V135H35Z" fill="#1e293b"/>
-                        <path d="M42 142H58V158H42V142Z" fill="#1e293b"/>
-                        <rect x="90" y="20" width="15" height="15" fill="#1e293b"/>
-                        <rect x="90" y="50" width="15" height="30" fill="#1e293b"/>
-                        <rect x="120" y="90" width="30" height="15" fill="#1e293b"/>
-                        <rect x="165" y="90" width="15" height="30" fill="#1e293b"/>
-                        <rect x="90" y="135" width="20" height="45" fill="#1e293b"/>
-                        <rect x="120" y="150" width="60" height="15" fill="#1e293b"/>
-                        <rect x="150" y="120" width="30" height="20" fill="#1e293b"/>
-                        <rect x="135" y="175" width="45" height="10" fill="#1e293b"/>
-                    </svg>
-                    <p class="text-[10px] font-mono text-slate-500 mt-2">Merchant Code: DS36703 - GKI DIRHAM</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mb-4 shadow-inner min-w-[200px] min-h-[200px] flex flex-col items-center justify-center relative">
+                    <div id="qris-spinner" class="hidden flex flex-col items-center gap-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-700"></i>
+                        <span class="text-xs text-slate-500">Membuat Kode QRIS Duitku...</span>
+                    </div>
+                    <div id="qris-code-box" class="flex justify-center"></div>
+                    <p id="qris-order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
                 </div>
 
                 <div class="space-y-2">
-                    <button id="confirm-payment-btn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 rounded-xl text-sm transition-all">
-                        <i class="fa-solid fa-circle-check"></i> Konfirmasi Pembayaran Selesai
+                    <button id="confirm-payment-btn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i> Cek Status Pembayaran
                     </button>
                     <button id="back-to-login-btn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-xl text-sm transition-all">
                         Kembali ke Login
@@ -534,7 +523,7 @@
                     <!-- Dynamic Transaction Rows -->
                 </tbody>
 
-                <!-- FOOTER CALCULATION SUMMARY (EXACT FORMAT FROM PHOTO 2) -->
+                <!-- FOOTER CALCULATION SUMMARY -->
                 <tfoot class="font-bold border-t-2 border-black">
                     <tr class="border-b border-black">
                         <td colspan="4" class="text-left px-3 py-1.5 border border-black">Jumlah Bulan ini</td>
@@ -558,7 +547,7 @@
                 </tfoot>
             </table>
 
-            <!-- FOOTER STATEMENT & CASH COUNT DETAILS (MATCHED TO PHOTO 2) -->
+            <!-- FOOTER STATEMENT & CASH COUNT DETAILS -->
             <div class="text-xs space-y-2 mt-4 text-black">
                 <p>Pada hari ini .................. tanggal ............................ kami dapati dalam kas sisa/saldo</p>
                 <p>Rp. <span id="print-statement-saldo" class="font-bold">..............................</span> ( <span id="print-terbilang" class="italic">....................................................................................</span> ) yang terdiri dari :</p>
@@ -606,8 +595,12 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // --- KONFIGURASI LINK GOOGLE APPS SCRIPT (WEB APP URL) ---
+        // --- KONFIGURASI LINK GOOGLE APPS SCRIPT (WEB APP URL SAYA) ---
+        // Ganti URL dibawah ini dengan URL Web App Apps Script Anda yang sudah di-Deploy
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwcwvf0NYBGpwZyi6GWmXpboVepqQarahnZ1att4t4LAQnnRGk-Dwoen53QpHpAaoovww/exec";
+
+        // Variable penampung transaksi order Duitku
+        let currentMerchantOrderId = null;
 
         // --- CONSTANTS & PRESETS ---
         const CATEGORY_SPLIT_40_20_40 = [
@@ -652,7 +645,6 @@
 
         // Default sample data based on original handwritten ledger
         let sampleTransactions = [
-            // April Data (Previous Month)
             { id: 101, date: '2026-04-06', type: 'penerimaan', category: 'Pundi-Pundi', description: 'Pundi-Pundi', amount: 329000, kodeMa: '' },
             { id: 102, date: '2026-04-06', type: 'penerimaan', category: 'Diakonia', description: 'Diakonia', amount: 94000, kodeMa: '' },
             { id: 103, date: '2026-04-06', type: 'penerimaan', category: 'Pembangunan', description: 'Pembangunan', amount: 230000, kodeMa: '' },
@@ -664,7 +656,6 @@
             { id: 109, date: '2026-04-06', type: 'pengeluaran', category: 'Pulsa Listrik Gereja', description: 'Pulsa Listrik Gereja', amount: 200000, kodeMa: '' },
             { id: 110, date: '2026-04-06', type: 'pengeluaran', category: 'Pulsa Listrik Rumah Pastori', description: 'Pulsa Listrik Rumah Pastori', amount: 105000, kodeMa: '' },
             
-            // May Data (Current Active Month)
             { id: 1, date: '2026-05-02', type: 'penerimaan', category: 'Pundi-Pundi', description: 'Pundi-Pundi Ibadah Minggu', amount: 9223000, kodeMa: '' },
             { id: 2, date: '2026-05-02', type: 'penerimaan', category: 'Perpuluhan', description: 'Perpuluhan Jemaat', amount: 1500000, kodeMa: '' },
             { id: 3, date: '2026-05-02', type: 'penerimaan', category: 'Diakonia', description: 'Derma Diakonia', amount: 450000, kodeMa: '' },
@@ -691,6 +682,7 @@
         const backToLoginBtn = document.getElementById('back-to-login-btn');
         const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
         const logoutBtn = document.getElementById('logout-btn');
+        const showQrisBtn = document.getElementById('show-qris-btn');
         
         const regPassword = document.getElementById('reg-password');
         const toggleRegPassword = document.getElementById('toggle-reg-password');
@@ -742,7 +734,6 @@
             loginForm.classList.add('hidden');
         });
 
-        // Register password toggle
         toggleRegPassword.addEventListener('click', () => {
             if (regPassword.type === 'password') {
                 regPassword.type = 'text';
@@ -751,6 +742,17 @@
                 regPassword.type = 'password';
                 regEyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
             }
+        });
+
+        showQrisBtn.addEventListener('click', () => {
+            loginFormContainer.classList.add('hidden');
+            qrisContainer.classList.remove('hidden');
+            generateDynamicQris({
+                email: 'bendahara@jemaat.or.id',
+                customerName: 'Jemaat GKI',
+                amount: 150000,
+                productDetails: 'Aktivasi Lisensi E-BKU DIRHAM 3'
+            });
         });
 
         // Register Submission Handler
@@ -764,7 +766,6 @@
                 return;
             }
 
-            // Sync registered Jemaat & Klasis into configuration headers
             const jemaatVal = document.getElementById('reg-jemaat').value;
             const klasisVal = document.getElementById('reg-klasis').value;
             const emailVal = document.getElementById('reg-email').value;
@@ -774,41 +775,98 @@
             if (klasisVal) configKlasis.value = klasisVal;
             syncPrintConfig();
 
-            // Request pembuatan QRIS ke Apps Script (jika URL sudah diisi)
-            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("AKfycbx...")) {
-                try {
-                    const response = await fetch(GAS_WEB_APP_URL, {
-                        method: "POST",
-                        body: JSON.stringify({
-                            action: "createQrisPayment",
-                            email: emailVal,
-                            customerName: nameVal,
-                            amount: 150000,
-                            productDetails: `Aktivasi E-BKU DIRHAM 3 - ${jemaatVal}`
-                        })
-                    });
-                    const resData = await response.json();
-                    if (resData.success && resData.qrString) {
-                        console.log("QRIS Generated:", resData.qrString);
-                    }
-                } catch (err) {
-                    console.error("Gagal terhubung ke Apps Script:", err);
-                }
-            }
-
-            alert('Pendaftaran Berhasil! Silahkan lakukan pembayaran QRIS untuk aktivasi lisensi.');
             loginFormContainer.classList.add('hidden');
             qrisContainer.classList.remove('hidden');
+
+            await generateDynamicQris({
+                email: emailVal,
+                customerName: nameVal,
+                amount: 150000,
+                productDetails: `Aktivasi E-BKU DIRHAM 3 - ${jemaatVal}`
+            });
         });
+
+        // FUNGSI UTAMA: MENGENERATE KODE QRIS DINAMIK DARI DUITKU
+        async function generateDynamicQris(payloadData) {
+            const qrBox = document.getElementById('qris-code-box');
+            const spinner = document.getElementById('qris-spinner');
+            const orderInfo = document.getElementById('qris-order-info');
+
+            qrBox.innerHTML = '';
+            spinner.classList.remove('hidden');
+            orderInfo.textContent = '';
+
+            if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("AKfycbx...")) {
+                spinner.classList.add('hidden');
+                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>GAS_WEB_APP_URL</code>.</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "createQrisPayment",
+                        ...payloadData
+                    })
+                });
+
+                const resData = await response.json();
+                spinner.classList.add('hidden');
+
+                if (resData.success && resData.qrString) {
+                    currentMerchantOrderId = resData.merchantOrderId;
+                    
+                    // Render QR Code secara instan dari QR String Duitku
+                    new QRCode(qrBox, {
+                        text: resData.qrString,
+                        width: 180,
+                        height: 180,
+                        colorDark: "#0f172a",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+
+                    orderInfo.textContent = `Order ID: ${resData.merchantOrderId} | Total: Rp ${Number(resData.amount).toLocaleString('id-ID')}`;
+                } else {
+                    qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">Gagal mengambil QRIS Duitku: ${resData.message || 'Respons tidak valid'}</div>`;
+                }
+            } catch (err) {
+                spinner.classList.add('hidden');
+                console.error("Error QRIS Duitku:", err);
+                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">Gagal terhubung ke Server Web App Apps Script.</div>`;
+            }
+        }
 
         backToLoginBtn.addEventListener('click', () => {
             qrisContainer.classList.add('hidden');
             loginFormContainer.classList.remove('hidden');
         });
 
-        confirmPaymentBtn.addEventListener('click', () => {
-            alert('Aktivasi Lisensi Berhasil! Anda memiliki akses penuh ke sistem DIRHAM 3.');
-            loginModal.classList.add('hidden');
+        confirmPaymentBtn.addEventListener('click', async () => {
+            const emailVal = document.getElementById('reg-email').value || "bendahara@jemaat.or.id";
+            
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("AKfycbx...")) {
+                try {
+                    confirmPaymentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa Status...';
+                    const checkRes = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&email=${encodeURIComponent(emailVal)}`);
+                    const checkData = await checkRes.json();
+                    
+                    if (checkData.active) {
+                        alert('Pembayaran Berhasil Dikonfirmasi! Lisensi E-BKU DIRHAM 3 Telah Aktif.');
+                        loginModal.classList.add('hidden');
+                    } else {
+                        alert('Pembayaran belum terdeteksi. Pastikan Anda telah menyelesaikan pembayaran pada aplikasi E-Wallet/Mobile Banking Anda.');
+                    }
+                } catch (e) {
+                    alert('Gagal memeriksa status pembayaran secara otomatis. Membuka sistem demo.');
+                    loginModal.classList.add('hidden');
+                } finally {
+                    confirmPaymentBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Cek Status Pembayaran';
+                }
+            } else {
+                loginModal.classList.add('hidden');
+            }
         });
 
         loginForm.addEventListener('submit', (e) => {
@@ -817,7 +875,6 @@
                 alert('Silahkan masukkan kata sandi.');
                 return;
             }
-            // Unlock system
             loginModal.classList.add('hidden');
         });
 
@@ -871,7 +928,6 @@
             el.addEventListener('input', syncPrintConfig);
         });
 
-        // Sync month filter with print header month name
         filterMonth.addEventListener('change', () => {
             const monthsNames = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
             configBulan.value = monthsNames[filterMonth.value];
@@ -944,7 +1000,6 @@
             const selectedMonth = parseInt(filterMonth.value);
             const selectedYear = parseInt(filterYear.value);
 
-            // Filter Current Month & Previous Months
             let totalBlnIniPenerimaan = 0;
             let totalBlnIniPengeluaran = 0;
 
@@ -964,24 +1019,19 @@
 
                 if (txY === selectedYear) {
                     if (txM < selectedMonth) {
-                        // S/D Bulan Lalu
                         if (tx.type === 'penerimaan') totalBlnLaluPenerimaan += Number(tx.amount);
                         if (tx.type === 'pengeluaran') totalBlnLaluPengeluaran += Number(tx.amount);
                     } else if (txM === selectedMonth) {
-                        // Bulan Ini
                         currentMonthTransactions.push(tx);
                         if (tx.type === 'penerimaan') {
                             const amt = Number(tx.amount);
                             totalBlnIniPenerimaan += amt;
 
-                            // Splits: 40% Sinode, 20% Klasis, 40% Jemaat
                             if (CATEGORY_SPLIT_40_20_40.includes(tx.category)) {
                                 dermaTerbagiTotal += amt;
                             } else if (tx.category === 'Perpuluhan') {
-                                // 100% Setor Ke Sinode
                                 perpuluhanTotal += amt;
                             } else {
-                                // Direct Jemaat Incomes (Diakonia, Pembangunan, etc.)
                                 kasJemaatMurniPenerimaan += amt;
                             }
                         } else if (tx.type === 'pengeluaran') {
@@ -989,13 +1039,11 @@
                         }
                     }
                 } else if (txY < selectedYear) {
-                    // Previous years accumulated into s/d Bulan Lalu
                     if (tx.type === 'penerimaan') totalBlnLaluPenerimaan += Number(tx.amount);
                     if (tx.type === 'pengeluaran') totalBlnLaluPengeluaran += Number(tx.amount);
                 }
             });
 
-            // Card Breakdown Calculations
             const sinode40 = dermaTerbagiTotal * 0.40;
             const klasis20 = dermaTerbagiTotal * 0.20;
             const jemaat40Derma = dermaTerbagiTotal * 0.40;
@@ -1005,7 +1053,6 @@
             const totalSemuaPengeluaran = totalBlnIniPengeluaran + totalBlnLaluPengeluaran;
             const sisaSaldoFinal = totalSemuaPenerimaan - totalSemuaPengeluaran;
 
-            // Render KPI Cards
             document.getElementById('card-total-pemasukan').textContent = formatRp(totalBlnIniPenerimaan);
             document.getElementById('card-sinode').textContent = formatRp(sinode40);
             document.getElementById('card-perpuluhan').textContent = formatRp(perpuluhanTotal);
@@ -1014,7 +1061,6 @@
             document.getElementById('card-total-pengeluaran').textContent = formatRp(totalBlnIniPengeluaran);
             document.getElementById('card-sisa-saldo').textContent = formatRp(sisaSaldoFinal);
 
-            // Render Interactive Screen Table & Print Ledger Table
             renderTables(currentMonthTransactions, {
                 penerimaanBlnIni: totalBlnIniPenerimaan,
                 pengeluaranBlnIni: totalBlnIniPengeluaran,
@@ -1045,7 +1091,6 @@
                 const penVal = isPenerimaan ? formatRp(tx.amount) : '-';
                 const pengVal = !isPenerimaan ? formatRp(tx.amount) : '-';
 
-                // Screen Table Row
                 const trScreen = document.createElement('tr');
                 trScreen.className = 'hover:bg-slate-50 border-b border-slate-100';
                 trScreen.innerHTML = `
@@ -1062,7 +1107,6 @@
                 `;
                 screenTbody.appendChild(trScreen);
 
-                // Printable DIRHAM 3 Row
                 const trPrint = document.createElement('tr');
                 trPrint.innerHTML = `
                     <td class="text-center border border-black py-1 px-1 font-mono">${idx + 1}</td>
@@ -1075,7 +1119,6 @@
                 printTbody.appendChild(trPrint);
             });
 
-            // Update DIRHAM 3 Print Footer Totals
             document.getElementById('sum-penerimaan-bln-ini').textContent = formatRp(totals.penerimaanBlnIni);
             document.getElementById('sum-pengeluaran-bln-ini').textContent = formatRp(totals.pengeluaranBlnIni);
 
@@ -1105,11 +1148,9 @@
             };
 
             if (idVal) {
-                // Update Existing
                 const index = transactions.findIndex(t => t.id === parseInt(idVal));
                 if (index !== -1) transactions[index] = newTx;
             } else {
-                // Insert New
                 transactions.push(newTx);
             }
 
