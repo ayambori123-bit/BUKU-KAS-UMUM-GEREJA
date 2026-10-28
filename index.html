@@ -600,9 +600,9 @@ const APPS_SCRIPT_URL =  "https://script.google.com/macros/s/AKfycbwcwvf0NYBGpwZ
 
 function generateDuitkuQris() {
     // Tampilkan animasi loading & sembunyikan kotak QR sebelumnya
-    document.getElementById('Qris-spinner').classList.remove('hidden');
-    document.getElementById('Qris-code-box').innerHTML = '';
-    document.getElementById('Qris-order-info').innerText = '';
+    document.getElementById('qris-spinner').classList.remove('hidden');
+    document.getElementById('qris-code-box').innerHTML = '';
+    document.getElementById('qris-order-info').innerText = '';
 
     // Ambil data user dari form pendaftaran/login
     const emailUser = document.getElementById('reg-email')?.value || document.getElementById('login-username')?.value || 'bendahara@jemaat.or.id';
@@ -631,7 +631,7 @@ function generateDuitkuQris() {
     })
     .catch(error => {
         console.error("Error:", error);
-        document.getElementById('Qris-spinner').classList.add('hidden');
+        document.getElementById('qris-spinner').classList.add('hidden');
         alert("Gagal terhubung ke server pembayaran.");
     });
 }
