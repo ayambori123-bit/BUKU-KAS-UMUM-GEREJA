@@ -595,62 +595,35 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-       const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcwvf0NYBGpwZyi6GWmXpboVepqQarahnZ1att4t4LAQnnRGk-Dwoen53QpHpAaoovww/exec";
+        // Ganti dengan URL Web App Google Apps Script Anda yang sudah di-deploy
+const APPS_SCRIPT_URL = "URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DISINI";
 
 function generateDuitkuQris() {
-    // 1. Tampilkan animasi loading & bersihkan kotak QR sebelumnya
+    // Tampilkan animasi loading & sembunyikan kotak QR sebelumnya
     document.getElementById('qris-spinner').classList.remove('hidden');
     document.getElementById('qris-code-box').innerHTML = '';
     document.getElementById('qris-order-info').innerText = '';
 
+    // Ambil data user dari form pendaftaran/login
     const emailUser = document.getElementById('reg-email')?.value || document.getElementById('login-username')?.value || 'bendahara@jemaat.or.id';
     const namaUser = document.getElementById('reg-fullname')?.value || 'Jemaat GKI';
 
     const payload = {
         action: "createQrisPayment",
-        amount: "300000",
+        amount: "300000", // Rp 300.000 / tahun
         productDetails: "Berlangganan E-BKU DIRHAM 3 (1 Tahun)",
         email: emailUser,
         customerName: namaUser
     };
 
-    // 2. Kirim permintaan ke Google Apps Script
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors", // Diperlukan untuk Google Apps Script Web App
         headers: {
-            "Content-Type": "text/plain;charset=utf-8" // Menggunakan text/plain agar terhindar dari isu CORS di Apps Script
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(result => {
-        // Sembunyikan animasi loading
-        document.getElementById('qris-spinner').classList.add('hidden');
-
-        if (result.success && result.qrString) {
-            // 3. Gunakan library qrcode.min.js untuk merender string QRIS menjadi gambar
-            new QRCode(document.getElementById("qris-code-box"), {
-                text: result.qrString,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
-            // Tampilkan informasi Nomor Pesanan / Order ID
-            document.getElementById('qris-order-info').innerText = "Order ID: " + result.merchantOrderId;
-            
-        } else {
-            alert("Gagal membuat QRIS: " + (result.message || "Kesalahan tidak diketahui"));
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        document.getElementById('qris-spinner').classList.add('hidden');
-        alert("Terjadi kesalahan koneksi ke server.");
-    });
-}
     .then(() => {
         // Karena mode 'no-cors' tidak bisa membaca response teks secara langsung,
         // kita bisa menggunakan pendekatan AJAX standar jika web app mengizinkan, 
