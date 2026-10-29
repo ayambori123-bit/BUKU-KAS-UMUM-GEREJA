@@ -828,7 +828,7 @@ function generateDuitkuQris() {
         });
 
         // FUNGSI UTAMA: MENGENERATE KODE QRIS DINAMIK DARI DUITKU
-        async function generateDynamicqris(payloadData) {
+        async function generateDynamicQris(payloadData) {
             const qrBox = document.getElementById('qris-code-box');
             const spinner = document.getElementById('qris-spinner');
             const orderInfo = document.getElementById('qris-order-info');
@@ -837,7 +837,7 @@ function generateDuitkuQris() {
             spinner.classList.remove('hidden');
             orderInfo.textContent = '';
 
-            if (!APPS_SCRIPT_URL|APPS_SCRIPT_URL| .includes("AKfycbx...")) {
+            if (!APPS_SCRIPT_URL||APPS_SCRIPT_URL .includes("AKfycbx...")) {
                 spinner.classList.add('hidden');
                 qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>APPS_SCRIPT_URL</code>.</div>`;
                 return;
