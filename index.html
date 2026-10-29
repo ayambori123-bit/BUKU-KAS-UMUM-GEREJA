@@ -181,20 +181,19 @@
                 <span class="inline-block bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-medium mb-3">Aktivasi Berlangganan Web/App</span>
                 <h3 class="text-lg font-bold text-slate-800">Scan QRIS Duitku Untuk Aktivasi</h3>
                 <p class="text-xs text-slate-500 mt-1 mb-4">Pindai kode QR dibawah menggunakan GoPay, OVO, ShopeePay, Dana, atau Mobile Banking Anda.</p>
-                 
-                    <!-- Tempat untuk menampilkan QRIS -->
-                   <div id="qris-code-box" style="text-align: center; margin: 20px 0;">
-                   <!-- Tag img untuk menampilkan gambar QRIS dari Duitku -->
-                   <img id="qris-image" src="" alt="QRIS Duitku" style="max-width: 250px; height: auto; border-radius: 8px; border: 1px solid #ddd; padding: 10px;">
-                    </div>
-              <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mb-4 shadow-inner min-w-[200px] min-h-[200px] flex flex-col items-center justify-center relative">
+                <!-- Tempat untuk menampilkan QRIS -->
+                <div id="qris-code-box" style="text-align: center; margin: 20px 0;">
+                <!-- Tag img untuk menampilkan gambar QRIS dari Duitku -->
+               <img id="qris-image" src="" alt="QRIS Duitku" style="max-width: 250px; height: auto; border-radius: 8px; border: 1px solid #ddd; padding: 10px;">
+               </div>
+                
+                <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mb-4 shadow-inner min-w-[200px] min-h-[200px] flex flex-col items-center justify-center relative">
                     <div id="qris-spinner" class="hidden flex flex-col items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-700"></i>
-                        <span class="text-xs text-slate-500">Membuat Kode Qris Duitku...</span>
+                        <span class="text-xs text-slate-500">Membuat Kode QRIS Duitku...</span>
                     </div>
-                   
                     <div id="qris-code-box" class="flex justify-center"></div>
-                    <p id="qris-Order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
+                    <p id="qris-order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
                 </div>
 
                 <div class="space-y-2">
@@ -601,8 +600,8 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-// Ganti dengan URL Web App Google Apps Script Anda yang sudah di-deploy
-const APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
+        // Ganti dengan URL Web App Google Apps Script Anda yang sudah di-deploy
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
 
 function generateDuitkuQris() {
     // Tampilkan animasi loading & sembunyikan kotak QR sebelumnya
@@ -616,7 +615,7 @@ function generateDuitkuQris() {
 
     const payload = {
         action: "createQrisPayment",
-        amount: "300000", // Rp 300 000 / tahun
+        amount: "300000", // Rp 300.000 / tahun
         productDetails: "Berlangganan E-BKU DIRHAM 3 (1 Tahun)",
         email: emailUser,
         customerName: namaUser
@@ -838,14 +837,14 @@ function generateDuitkuQris() {
             spinner.classList.remove('hidden');
             orderInfo.textContent = '';
 
-            if (!APPS_SCRIPT_URL|APPS_SCRIPT_URL .includes("AKfycbx...")) {
+            if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("AKfycbx...")) {
                 spinner.classList.add('hidden');
-                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>APPS_SCRIPT_URL</code>.</div>`;
+                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>GAS_WEB_APP_URL</code>.</div>`;
                 return;
             }
 
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
+                const response = await fetch(GAS_WEB_APP_URL, {
                     method: "POST",
                     body: JSON.stringify({
                         action: "createQrisPayment",
@@ -888,7 +887,7 @@ function generateDuitkuQris() {
         confirmPaymentBtn.addEventListener('click', async () => {
             const emailVal = document.getElementById('reg-email').value || "bendahara@jemaat.or.id";
             
-            if (APPS_SCRIPT_URL && !APPS_SCRIPT_URLL.includes("AKfycbx...")) {
+            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("AKfycbx...")) {
                 try {
                     confirmPaymentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa Status...';
                     const checkRes = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&email=${encodeURIComponent(emailVal)}`);
