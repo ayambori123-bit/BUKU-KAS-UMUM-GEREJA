@@ -185,10 +185,10 @@
                 <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mb-4 shadow-inner min-w-[200px] min-h-[200px] flex flex-col items-center justify-center relative">
                     <div id="qris-spinner" class="hidden flex flex-col items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-700"></i>
-                        <span class="text-xs text-slate-500">Membuat Kode QRIS Duitku...</span>
+                        <span class="text-xs text-slate-500">Membuat Kode Qris Duitku...</span>
                     </div>
                     <div id="qris-code-box" class="flex justify-center"></div>
-                    <p id="qris-order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
+                    <p id="qris-Order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
                 </div>
 
                 <div class="space-y-2">
@@ -610,7 +610,7 @@ function generateDuitkuQris() {
 
     const payload = {
         action: "createQrisPayment",
-        amount: "300000", // Rp 300.000 / tahun
+        amount: "300000", // Rp 300 000 / tahun
         productDetails: "Berlangganan E-BKU DIRHAM 3 (1 Tahun)",
         email: emailUser,
         customerName: namaUser
