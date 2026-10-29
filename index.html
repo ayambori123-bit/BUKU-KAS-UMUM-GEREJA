@@ -601,7 +601,7 @@
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
 // Ganti dengan URL Web App Google Apps Script Anda yang sudah di-deploy
-const GAS_WEB_APP_URL  = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
+const APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
 
 function generateDuitkuQris() {
     // Tampilkan animasi loading & sembunyikan kotak QR sebelumnya
@@ -621,7 +621,7 @@ function generateDuitkuQris() {
         customerName: namaUser
     };
 
-    fetch(GAS_WEB_APP_URL, {
+    fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors", // Diperlukan untuk Google Apps Script Web App
         headers: {
@@ -828,7 +828,7 @@ function generateDuitkuQris() {
         });
 
         // FUNGSI UTAMA: MENGENERATE KODE QRIS DINAMIK DARI DUITKU
-        async function generateDynamicQris(payloadData) {
+        async function generateDynamicqris(payloadData) {
             const qrBox = document.getElementById('qris-code-box');
             const spinner = document.getElementById('qris-spinner');
             const orderInfo = document.getElementById('qris-order-info');
@@ -837,14 +837,14 @@ function generateDuitkuQris() {
             spinner.classList.remove('hidden');
             orderInfo.textContent = '';
 
-            if (!GAS_WEB_APP_URL||GAS_WEB_APP_URL .includes("AKfycbx...")) {
+            if (!APPS_SCRIPT_URL|APPS_SCRIPT_URL| .includes("AKfycbx...")) {
                 spinner.classList.add('hidden');
-                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>GAS_WEB_APP_URL</code>.</div>`;
+                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>APPS_SCRIPT_URL</code>.</div>`;
                 return;
             }
 
             try {
-                const response = await fetch(GAS_WEB_APP_URL, {
+                const response = await fetch(APPS_SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({
                         action: "createQrisPayment",
@@ -887,7 +887,7 @@ function generateDuitkuQris() {
         confirmPaymentBtn.addEventListener('click', async () => {
             const emailVal = document.getElementById('reg-email').value || "bendahara@jemaat.or.id";
             
-            if (GAS_WEB_APP_URL && !GAS_WEB_APP_URL.includes("AKfycbx...")) {
+            if (APPS_SCRIPT_URL && !APPS_SCRIPT_URLL.includes("AKfycbx...")) {
                 try {
                     confirmPaymentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa Status...';
                     const checkRes = await fetch(`${GAS_WEB_APP_URL}?action=checkStatus&email=${encodeURIComponent(emailVal)}`);
