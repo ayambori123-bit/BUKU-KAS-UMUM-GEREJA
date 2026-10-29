@@ -596,7 +596,7 @@
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
 // Ganti dengan URL Web App Google Apps Script Anda yang sudah di-deploy
-const APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
+const GAS_WEB_APP_URL  = "https://script.google.com/macros/s/AKfycbypvpBbZsR5oUEvg657IbGpqLq4P6vBO0ReUilB6HPpn5A7A3wRTGQgcPDq1DohOaW3/exec";
 
 function generateDuitkuQris() {
     // Tampilkan animasi loading & sembunyikan kotak QR sebelumnya
@@ -616,7 +616,7 @@ function generateDuitkuQris() {
         customerName: namaUser
     };
 
-    fetch(APPS_SCRIPT_URL, {
+    fetch(GAS_WEB_APP_URL, {
         method: "POST",
         mode: "no-cors", // Diperlukan untuk Google Apps Script Web App
         headers: {
@@ -832,14 +832,14 @@ function generateDuitkuQris() {
             spinner.classList.remove('hidden');
             orderInfo.textContent = '';
 
-            if (!APPS_SCRIPT_URL ||APPS_SCRIPT_URL .includes("AKfycbx...")) {
+            if (!GAS_WEB_APP_URL||GAS_WEB_APP_URL .includes("AKfycbx...")) {
                 spinner.classList.add('hidden');
-                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>APPS_SCRIPT_URL</code>.</div>`;
+                qrBox.innerHTML = `<div class="p-3 text-xs text-rose-600 bg-rose-50 rounded-lg">URL Google Apps Script belum diisi pada variabel <code>GAS_WEB_APP_URL</code>.</div>`;
                 return;
             }
 
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
+                const response = await fetch(GAS_WEB_APP_URL, {
                     method: "POST",
                     body: JSON.stringify({
                         action: "createQrisPayment",
