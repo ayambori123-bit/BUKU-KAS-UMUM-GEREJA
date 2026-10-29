@@ -618,7 +618,7 @@ function generateDuitkuQris() {
 
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", 
+        mode: "no-cors", // Diperlukan untuk Google Apps Script Web App
         headers: {
             "Content-Type": "application/json"
         },
