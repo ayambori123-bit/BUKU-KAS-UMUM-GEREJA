@@ -835,7 +835,7 @@ function generateDuitkuQris() {
 
         // FUNGSI UTAMA: MENGENERATE KODE QRIS DINAMIK DARI DUITKU
         async function generateDynamicQris(payloadData) {
-           
+            const qrBox = document.getElementById('qris-code-box');
             const spinner = document.getElementById('qris-spinner');
             const orderInfo = document.getElementById('qris-order-info');
 
