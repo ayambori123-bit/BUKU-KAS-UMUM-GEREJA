@@ -99,8 +99,6 @@
                 <h2 class="text-2xl font-bold">E-BKU DIRHAM 3</h2>
                 <p class="text-emerald-100 text-xs mt-1">Aplikasi Buku Kas Umum Kas Jemaat GKI</p>
             </div>
-        </div>
-               
 
             <!-- Login View -->
             <div id="login-form-container" class="p-6">
@@ -184,17 +182,26 @@
                 <h3 class="text-lg font-bold text-slate-800">Scan QRIS Duitku Untuk Aktivasi</h3>
                 <p class="text-xs text-slate-500 mt-1 mb-4">Pindai kode QR dibawah menggunakan GoPay, OVO, ShopeePay, Dana, atau Mobile Banking Anda.</p>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mb-4 shadow-inner min-w-[200px] min-h-[200px] flex flex-col items-center justify-center relative">
-                  
+                   <!-- Tempat untuk menampilkan QRIS -->
+                <div id="qris-code-box" style="text-align: center; margin: 20px 0;">
+                <!-- Tag img untuk menampilkan gambar QRIS dari Duitku -->
+               <img id="qris-image" src="" alt="Qrisduitku" style="max-width: 250px; height: auto; border-radius: 8px; border: 1px solid #ddd; padding: 10px;">
+               </div>
+                   
                     <div id="qris-spinner" class="hidden flex flex-col items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-700"></i>
-                        <span class="text-xs text-slate-500">...</span>
+                        <span class="text-xs text-slate-500">Membuat Kode QRIS Duitku...</span>
                     </div>
                     
                    
                     <div id="qris-code-box" class="flex justify-center"></div>
                     <p id="qris-order-info" class="text-[10px] font-mono text-slate-500 mt-3"></p>
                 </div>
-                 
+                 <!-- Tempat untuk menampilkan QRIS -->
+                <div id="qris-code-box" style="text-align: center; margin: 20px 0;">
+                <!-- Tag img untuk menampilkan gambar QRIS dari Duitku -->
+               <img id="qris-image" src="" alt="QRIS Duitku" style="max-width: 250px; height: auto; border-radius: 8px; border: 1px solid #ddd; padding: 10px;">
+               </div>
                 <div class="space-y-2">
                     <button id="confirm-payment-btn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-circle-check"></i> Cek Status Pembayaran
@@ -218,7 +225,7 @@
                     <h1 class="font-bold text-lg leading-tight">E-BKU DIRHAM 3</h1>
                     <p class="text-xs text-emerald-200 hidden sm:block">Buku Kas Umum GKI Jemaat</p>
                 </div>
-        
+            </div>
 
             <div class="flex items-center gap-2 sm:gap-4">
                 <button onclick="window.print()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 transition-all shadow">
@@ -653,21 +660,8 @@ function generateDuitkuQris() {
             'Derma PKB',
             'Derma Rayon 1',
             'Derma Rayon 2',
-            'Derma Rayon 3',
-            'Derma Rayon 4',
-            'Derma Rayon 5',
-            'Derma Rayon 6',
-            'Derma Rayon 7',
             'Derma Perjamuan Kudus',
-            'Derma 1 KSP'
-            'Derma 2 KSP'
-            'Derma 3 KSP'
-            'Derma 4 KSP'
-            'Derma 5 KSP'
-            'Derma 6 KSP'
-            'Derma 7 KSP'
-            
-        
+            'Derma KSP'
         ];
 
         const PRESET_PENERIMAAN = [
